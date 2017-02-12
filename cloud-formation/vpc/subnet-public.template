@@ -1,0 +1,91 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Create Subnet",
+  "Parameters": {
+    "AvailabilityZone": {
+      "Type": "String",
+      "Default": "eu-west-2a"
+    },
+    "CidrBlock": {
+      "Type": "String",
+      "Default": "10.0.0.0/24"
+    },
+    "SubnetName": {
+      "Type": "String",
+      "Default": "CF-Subnet-Public-eu-west-2a"
+    },
+    "VPC": {
+      "Description": "Name of an active CloudFormation stack that contains a VPC.",
+      "Type": "String",
+      "MinLength": 1,
+      "MaxLength": 255,
+      "AllowedPattern": "^[a-zA-Z][-a-zA-Z0-9]*$",
+      "Default": "CF-VPC-eu-west-2"
+    }
+  },
+  "Resources": {
+    "Subnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": {
+          "Ref": "AvailabilityZone"
+        },
+        "CidrBlock": {
+          "Ref": "CidrBlock"
+        },
+        "VpcId": {
+          "Fn::ImportValue": {
+            "Fn::Sub": "${VPC}-VPCId"
+          }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Ref": "SubnetName"
+            }
+          }
+        ]
+      }
+    },
+    "SubnetRouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "Subnet"
+        },
+        "RouteTableId": {
+          "Fn::ImportValue": {
+            "Fn::Sub": "${VPC}-RouteTableId"
+          }
+        }
+      }
+    },
+    "SubnetNetworkAclAssociation": {
+      "Type": "AWS::EC2::SubnetNetworkAclAssociation",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "Subnet"
+        },
+        "NetworkAclId": {
+          "Fn::ImportValue": {
+            "Fn::Sub": "${VPC}-NetworkAclId"
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "SubnetId": {
+      "Description": "Subnet ID",
+      "Value": {
+        "Ref": "Subnet"
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-SubnetId"
+        }
+      }
+    }
+  }
+}
