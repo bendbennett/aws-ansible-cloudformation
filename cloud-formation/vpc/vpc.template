@@ -2,18 +2,6 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Create VPC",
   "Parameters": {
-    "EnableDnsSupport": {
-      "Type": "String",
-      "Default": "true"
-    },
-    "EnableDnsHostnames": {
-      "Type": "String",
-      "Default": "true"
-    },
-    "InstanceTenancy": {
-      "Type": "String",
-      "Default": "default"
-    },
     "RouteDestinationCidrBlock": {
       "Type": "String",
       "Default": "0.0.0.0/0"
@@ -22,9 +10,21 @@
       "Type": "String",
       "Default": "10.0.0.0/16"
     },
+    "VPCEnableDnsHostnames": {
+      "Type": "String",
+      "Default": "true"
+    },
+    "VPCEnableDnsSupport": {
+      "Type": "String",
+      "Default": "true"
+    },
     "VPCName": {
       "Type": "String",
-      "Default": "CF-VPC-eu-west-2"
+      "Default": "CF-VPC"
+    },
+    "VPCInstanceTenancy": {
+      "Type": "String",
+      "Default": "default"
     }
   },
   "Resources": {
@@ -63,11 +63,9 @@
       "Type" : "AWS::EC2::Route",
       "DependsOn" : "VPCGatewayAttachment",
       "Properties" : {
-        "RouteTableId" : { "Ref" : "RouteTable" },
-        "DestinationCidrBlock" : {
-          "Ref": "RouteDestinationCidrBlock"
-        },
-        "GatewayId" : { "Ref" : "InternetGateway" }
+        "DestinationCidrBlock" : { "Ref": "RouteDestinationCidrBlock" },
+        "GatewayId" : { "Ref" : "InternetGateway" },
+        "RouteTableId" : { "Ref" : "RouteTable" }
       }
     },
     "RouteTable" : {
@@ -79,24 +77,14 @@
     "VPC": {
       "Type": "AWS::EC2::VPC",
       "Properties": {
-        "CidrBlock": {
-          "Ref": "VPCCidrBlock"
-        },
-        "EnableDnsSupport": {
-          "Ref": "EnableDnsSupport"
-        },
-        "EnableDnsHostnames": {
-          "Ref": "EnableDnsHostnames"
-        },
-        "InstanceTenancy": {
-          "Ref": "InstanceTenancy"
-        },
+        "CidrBlock": { "Ref": "VPCCidrBlock" },
+        "EnableDnsHostnames": { "Ref": "VPCEnableDnsHostnames" },
+        "EnableDnsSupport": { "Ref": "VPCEnableDnsSupport" },
+        "InstanceTenancy": { "Ref": "VPCInstanceTenancy" },
         "Tags": [
           {
             "Key": "Name",
-            "Value": {
-              "Ref": "VPCName"
-            }
+            "Value": { "Ref": "VPCName"}
           }
         ]
       }
@@ -112,35 +100,23 @@
   "Outputs": {
     "RouteTable": {
       "Description": "Route Table ID",
-      "Value": {
-        "Ref": "RouteTable"
-      },
+      "Value": { "Ref": "RouteTable" },
       "Export": {
-        "Name": {
-          "Fn::Sub": "${AWS::StackName}-RouteTableId"
-        }
+        "Name": { "Fn::Sub": "${AWS::StackName}-RouteTableId" }
       }
     },
-    "VPCDefaultNetworkAclId": {
-      "Description": "VPC Default Network ACL ID",
-      "Value": {
-        "Ref": "NetworkAcl"
-      },
+    "VPCNetworkAclId": {
+      "Description": "VPC Network Acl ID",
+      "Value": { "Ref": "NetworkAcl" },
       "Export": {
-        "Name": {
-          "Fn::Sub": "${AWS::StackName}-NetworkAclId"
-        }
+        "Name": { "Fn::Sub": "${AWS::StackName}-NetworkAclId" }
       }
     },
     "VPCId": {
       "Description": "VPC ID",
-      "Value": {
-        "Ref": "VPC"
-      },
+      "Value": { "Ref": "VPC" },
       "Export": {
-        "Name": {
-          "Fn::Sub": "${AWS::StackName}-VPCId"
-        }
+        "Name": { "Fn::Sub": "${AWS::StackName}-VPCId"}
       }
     }
   }

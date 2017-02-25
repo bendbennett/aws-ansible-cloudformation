@@ -1,21 +1,21 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Create Subnet",
+  "Description": "Create Public Subnet",
   "Parameters": {
-    "AvailabilityZone": {
+    "SubnetAvailabilityZone": {
       "Type": "String",
       "Default": "eu-west-2a"
     },
-    "CidrBlock": {
+    "SubnetCidrBlock": {
       "Type": "String",
       "Default": "10.0.0.0/24"
     },
     "SubnetName": {
       "Type": "String",
-      "Default": "CF-Subnet-Public-eu-west-2a"
+      "Default": "CF-VPC-Subnet-Public"
     },
     "VPC": {
-      "Description": "Name of an active CloudFormation stack that contains a VPC.",
+      "Description": "Name of an active CloudFormation stack that outputs/exports VPCId, RouteTableId and NetworkAclId.",
       "Type": "String",
       "MinLength": 1,
       "MaxLength": 255,
@@ -27,50 +27,34 @@
     "Subnet": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "AvailabilityZone": {
-          "Ref": "AvailabilityZone"
-        },
-        "CidrBlock": {
-          "Ref": "CidrBlock"
-        },
+        "AvailabilityZone": { "Ref": "SubnetAvailabilityZone" },
+        "CidrBlock": { "Ref": "SubnetCidrBlock" },
         "VpcId": {
-          "Fn::ImportValue": {
-            "Fn::Sub": "${VPC}-VPCId"
-          }
+          "Fn::ImportValue": { "Fn::Sub": "${VPC}-VPCId" }
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": {
-              "Ref": "SubnetName"
-            }
+            "Value": { "Ref": "SubnetName" }
           }
         ]
-      }
-    },
-    "SubnetRouteTableAssociation": {
-      "Type": "AWS::EC2::SubnetRouteTableAssociation",
-      "Properties": {
-        "SubnetId": {
-          "Ref": "Subnet"
-        },
-        "RouteTableId": {
-          "Fn::ImportValue": {
-            "Fn::Sub": "${VPC}-RouteTableId"
-          }
-        }
       }
     },
     "SubnetNetworkAclAssociation": {
       "Type": "AWS::EC2::SubnetNetworkAclAssociation",
       "Properties": {
-        "SubnetId": {
-          "Ref": "Subnet"
-        },
+        "SubnetId": { "Ref": "Subnet" },
         "NetworkAclId": {
-          "Fn::ImportValue": {
-            "Fn::Sub": "${VPC}-NetworkAclId"
-          }
+          "Fn::ImportValue": { "Fn::Sub": "${VPC}-NetworkAclId" }
+        }
+      }
+    },
+    "SubnetRouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": { "Ref": "Subnet" },
+        "RouteTableId": {
+          "Fn::ImportValue": { "Fn::Sub": "${VPC}-RouteTableId" }
         }
       }
     }
@@ -78,13 +62,9 @@
   "Outputs": {
     "SubnetId": {
       "Description": "Subnet ID",
-      "Value": {
-        "Ref": "Subnet"
-      },
+      "Value": { "Ref": "Subnet" },
       "Export": {
-        "Name": {
-          "Fn::Sub": "${AWS::StackName}-SubnetId"
-        }
+        "Name": { "Fn::Sub": "${AWS::StackName}-SubnetId" }
       }
     }
   }
