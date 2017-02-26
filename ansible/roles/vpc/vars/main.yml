@@ -1,3 +1,8 @@
-stack_name: cf-vpc
-region: eu-west-1
-template: ../cloud-formation/vpc/vpc.template
+region: eu-west-2
+
+vpc_stack_name: cf-vpc
+vpc_template: ../cloud-formation/vpc/vpc.template
+
+subnet_public_template: ../cloud-formation/vpc/subnet-public.template
+
+subnet_private_template: ../cloud-formation/vpc/subnet-private.template
