@@ -1,0 +1,3 @@
+stack_name: cf-vpc
+region: eu-west-1
+template: ../cloud-formation/vpc/vpc.template
