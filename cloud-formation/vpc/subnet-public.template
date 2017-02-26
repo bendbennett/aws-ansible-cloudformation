@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Create Public Subnet",
+  "Description": "Public Subnet",
   "Parameters": {
     "SubnetAvailabilityZone": {
       "Type": "String",
@@ -14,13 +14,9 @@
       "Type": "String",
       "Default": "CF-VPC-Subnet-Public"
     },
-    "VPC": {
-      "Description": "Name of an active CloudFormation stack that outputs/exports VPCId, RouteTableId and NetworkAclId.",
+    "VPCStackName": {
       "Type": "String",
-      "MinLength": 1,
-      "MaxLength": 255,
-      "AllowedPattern": "^[a-zA-Z][-a-zA-Z0-9]*$",
-      "Default": "CF-VPC-eu-west-2"
+      "Default": "cf-vpc"
     }
   },
   "Resources": {
@@ -30,7 +26,7 @@
         "AvailabilityZone": { "Ref": "SubnetAvailabilityZone" },
         "CidrBlock": { "Ref": "SubnetCidrBlock" },
         "VpcId": {
-          "Fn::ImportValue": { "Fn::Sub": "${VPC}-VPCId" }
+          "Fn::ImportValue": { "Fn::Sub": "${VPCStackName}-vpc::id" }
         },
         "Tags": [
           {
@@ -45,7 +41,7 @@
       "Properties": {
         "SubnetId": { "Ref": "Subnet" },
         "NetworkAclId": {
-          "Fn::ImportValue": { "Fn::Sub": "${VPC}-NetworkAclId" }
+          "Fn::ImportValue": { "Fn::Sub": "${VPCStackName}-network::acl::id" }
         }
       }
     },
@@ -54,17 +50,17 @@
       "Properties": {
         "SubnetId": { "Ref": "Subnet" },
         "RouteTableId": {
-          "Fn::ImportValue": { "Fn::Sub": "${VPC}-RouteTableId" }
+          "Fn::ImportValue": { "Fn::Sub": "${VPCStackName}-route::table::id" }
         }
       }
     }
   },
   "Outputs": {
     "SubnetId": {
-      "Description": "Subnet ID",
+      "Description": "Public Subnet ID",
       "Value": { "Ref": "Subnet" },
       "Export": {
-        "Name": { "Fn::Sub": "${AWS::StackName}-SubnetId" }
+        "Name": { "Fn::Sub": "${AWS::StackName}-subnet::id" }
       }
     }
   }

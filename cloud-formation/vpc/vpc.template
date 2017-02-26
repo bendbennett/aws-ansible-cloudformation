@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Create VPC",
+  "Description": "VPC",
   "Parameters": {
     "RouteDestinationCidrBlock": {
       "Type": "String",
@@ -10,21 +10,9 @@
       "Type": "String",
       "Default": "10.0.0.0/16"
     },
-    "VPCEnableDnsHostnames": {
-      "Type": "String",
-      "Default": "true"
-    },
-    "VPCEnableDnsSupport": {
-      "Type": "String",
-      "Default": "true"
-    },
     "VPCName": {
       "Type": "String",
       "Default": "CF-VPC"
-    },
-    "VPCInstanceTenancy": {
-      "Type": "String",
-      "Default": "default"
     }
   },
   "Resources": {
@@ -78,9 +66,9 @@
       "Type": "AWS::EC2::VPC",
       "Properties": {
         "CidrBlock": { "Ref": "VPCCidrBlock" },
-        "EnableDnsHostnames": { "Ref": "VPCEnableDnsHostnames" },
-        "EnableDnsSupport": { "Ref": "VPCEnableDnsSupport" },
-        "InstanceTenancy": { "Ref": "VPCInstanceTenancy" },
+        "EnableDnsHostnames": "true",
+        "EnableDnsSupport": "true",
+        "InstanceTenancy": "default",
         "Tags": [
           {
             "Key": "Name",
@@ -98,25 +86,25 @@
     }
   },
   "Outputs": {
-    "RouteTable": {
-      "Description": "Route Table ID",
-      "Value": { "Ref": "RouteTable" },
-      "Export": {
-        "Name": { "Fn::Sub": "${AWS::StackName}-RouteTableId" }
-      }
-    },
-    "VPCNetworkAclId": {
-      "Description": "VPC Network Acl ID",
+    "NetworkAclId": {
+      "Description": "Network Acl Id",
       "Value": { "Ref": "NetworkAcl" },
       "Export": {
-        "Name": { "Fn::Sub": "${AWS::StackName}-NetworkAclId" }
+        "Name": { "Fn::Sub": "${AWS::StackName}-network::acl::id" }
+      }
+    },
+    "RouteTableId": {
+      "Description": "Route Table Id",
+      "Value": { "Ref": "RouteTable" },
+      "Export": {
+        "Name": { "Fn::Sub": "${AWS::StackName}-route::table::id" }
       }
     },
     "VPCId": {
-      "Description": "VPC ID",
+      "Description": "VPC Id",
       "Value": { "Ref": "VPC" },
       "Export": {
-        "Name": { "Fn::Sub": "${AWS::StackName}-VPCId"}
+        "Name": { "Fn::Sub": "${AWS::StackName}-vpc::id"}
       }
     }
   }
