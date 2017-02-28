@@ -8,30 +8,27 @@
 
 - name: cloudformation - subnet - public
   cloudformation:
-    stack_name: "{{ item.stack_name }}"
+    stack_name: "{{ item.value.stack_name }}"
     state: "present"
     region: "{{ region }}"
     disable_rollback: true
     template: "{{ subnet_public_template }}"
     template_parameters:
-      SubnetAvailabilityZone: "{{ item.availability_zone }}"
-      SubnetCidrBlock: "{{ item.cidr_block }}"
+      SubnetAvailabilityZone: "{{ item.value.availability_zone }}"
+      SubnetCidrBlock: "{{ item.value.cidr_block }}"
       VPCStackName: "{{ vpc_stack_name }}"
-  with_items:
-    - { stack_name: 'cf-subnet-public', availability_zone: 'eu-west-2a', cidr_block: '10.0.0.0/24' }
+  with_dict: "{{ public_subnets }}"
 
 - name: cloudformation - subnet - private
   cloudformation:
-    stack_name: "{{ item.stack_name }}"
+    stack_name: "{{ item.value.stack_name }}"
     state: "present"
     region: "{{ region }}"
     disable_rollback: true
     template: "{{ subnet_private_template }}"
     template_parameters:
-      SubnetAvailabilityZone: "{{ item.availability_zone }}"
-      SubnetCidrBlock: "{{ item.cidr_block }}"
-#      need to pull this out of vars from subnet public
-      SubnetPublicStackName: 'cf-subnet-public'
+      SubnetAvailabilityZone: "{{ item.value.availability_zone }}"
+      SubnetCidrBlock: "{{ item.value.cidr_block }}"
+      SubnetPublicStackName: "{{ item.value.subnet_public_stack_name }}"
       VPCStackName: "{{ vpc_stack_name }}"
-  with_items:
-    - { stack_name: 'cf-subnet-private', availability_zone: 'eu-west-2a', cidr_block: '10.0.1.0/24' }
+  with_dict: "{{ private_subnets }}"

@@ -1,8 +1,29 @@
 region: eu-west-2
 
 vpc_stack_name: cf-vpc
+
 vpc_template: ../cloud-formation/vpc/vpc.template
-
 subnet_public_template: ../cloud-formation/vpc/subnet-public.template
-
 subnet_private_template: ../cloud-formation/vpc/subnet-private.template
+
+public_subnets:
+  subnet_1:
+    availability_zone: eu-west-2a
+    cidr_block: 10.0.0.0/24
+    stack_name: cf-subnet-public-1
+  subnet_2:
+    availability_zone: eu-west-2b
+    cidr_block: 10.0.1.0/24
+    stack_name: cf-subnet-public-2
+
+private_subnets:
+  subnet_1:
+    availability_zone: eu-west-2a
+    cidr_block: 10.0.2.0/24
+    subnet_public_stack_name: "{{ public_subnets.subnet_1.stack_name }}"
+    stack_name: cf-subnet-private-1
+  subnet_2:
+    availability_zone: eu-west-2b
+    cidr_block: 10.0.3.0/24
+    subnet_public_stack_name: "{{ public_subnets.subnet_2.stack_name }}"
+    stack_name: cf-subnet-private-2
