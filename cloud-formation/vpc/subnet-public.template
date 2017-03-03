@@ -12,7 +12,7 @@
     },
     "SubnetName": {
       "Type": "String",
-      "Default": "CF-VPC-Subnet-Public"
+      "Default": "cf-subnet-public-1"
     },
     "VPCStackName": {
       "Type": "String",
@@ -25,9 +25,7 @@
       "Properties": {
         "AvailabilityZone": { "Ref": "SubnetAvailabilityZone" },
         "CidrBlock": { "Ref": "SubnetCidrBlock" },
-        "VpcId": {
-          "Fn::ImportValue": { "Fn::Sub": "${VPCStackName}-vpc::id" }
-        },
+        "VpcId": { "Fn::ImportValue": { "Fn::Sub": "${VPCStackName}-vpc::id" } },
         "Tags": [
           {
             "Key": "Name",
@@ -39,19 +37,15 @@
     "SubnetNetworkAclAssociation": {
       "Type": "AWS::EC2::SubnetNetworkAclAssociation",
       "Properties": {
-        "SubnetId": { "Ref": "Subnet" },
-        "NetworkAclId": {
-          "Fn::ImportValue": { "Fn::Sub": "${VPCStackName}-network::acl::id" }
-        }
+        "NetworkAclId": { "Fn::ImportValue": { "Fn::Sub": "${VPCStackName}-network::acl::id" } },
+        "SubnetId": { "Ref": "Subnet" }
       }
     },
     "SubnetRouteTableAssociation": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
-        "SubnetId": { "Ref": "Subnet" },
-        "RouteTableId": {
-          "Fn::ImportValue": { "Fn::Sub": "${VPCStackName}-route::table::id" }
-        }
+        "RouteTableId": { "Fn::ImportValue": { "Fn::Sub": "${VPCStackName}-route::table::id" } },
+        "SubnetId": { "Ref": "Subnet" }
       }
     }
   },

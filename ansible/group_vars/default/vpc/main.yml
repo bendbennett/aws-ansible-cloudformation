@@ -1,10 +1,12 @@
 region: eu-west-2
 
-vpc_stack_name: cf-vpc
-
 vpc_template: ../cloud-formation/vpc/vpc.template
 subnet_public_template: ../cloud-formation/vpc/subnet-public.template
 subnet_private_template: ../cloud-formation/vpc/subnet-private.template
+
+vpc:
+  cidr_block: 10.0.0.0/16
+  stack_name: cf-vpc
 
 public_subnets:
   subnet_1:

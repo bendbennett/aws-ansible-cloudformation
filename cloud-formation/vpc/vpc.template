@@ -10,19 +10,45 @@
       "Type": "String",
       "Default": "10.0.0.0/16"
     },
+    "VPCInternetGatewayName": {
+      "Type": "String",
+      "Default": "cf-vpc-internet::gateway"
+    },
     "VPCName": {
       "Type": "String",
-      "Default": "CF-VPC"
+      "Default": "cf-vpc"
+    },
+    "VPCNetworkAclName": {
+      "Type": "String",
+      "Default": "cf-vpc-network::acl"
+    },
+    "VPCRouteTableName": {
+      "Type": "String",
+      "Default": "cf-vpc-route::table"
     }
   },
   "Resources": {
     "InternetGateway" : {
-      "Type" : "AWS::EC2::InternetGateway"
+      "Type" : "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": { "Ref": "VPCInternetGatewayName"}
+          }
+        ]
+      }
     },
     "NetworkAcl" : {
       "Type" : "AWS::EC2::NetworkAcl",
       "Properties" : {
-        "VpcId" : { "Ref" : "VPC" }
+        "VpcId" : { "Ref" : "VPC" },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": { "Ref": "VPCNetworkAclName"}
+          }
+        ]
       }
     },
     "NetworkAclEntryEgress": {
@@ -59,7 +85,13 @@
     "RouteTable" : {
       "Type" : "AWS::EC2::RouteTable",
       "Properties" : {
-        "VpcId" : { "Ref" : "VPC" }
+        "VpcId" : { "Ref" : "VPC" },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": { "Ref": "VPCRouteTableName"}
+          }
+        ]
       }
     },
     "VPC": {
@@ -80,8 +112,8 @@
     "VPCGatewayAttachment" : {
       "Type" : "AWS::EC2::VPCGatewayAttachment",
       "Properties" : {
-        "VpcId" : { "Ref" : "VPC" },
-        "InternetGatewayId" : { "Ref" : "InternetGateway" }
+        "InternetGatewayId" : { "Ref" : "InternetGateway" },
+        "VpcId" : { "Ref" : "VPC" }
       }
     }
   },
