@@ -14,6 +14,6 @@
 
 - name: cloudformation - vpc
   cloudformation:
-    stack_name: "{{ vpc_stack_name }}"
+    stack_name: "{{ vpc.stack_name }}"
     state: "absent"
     region: "{{ region }}"

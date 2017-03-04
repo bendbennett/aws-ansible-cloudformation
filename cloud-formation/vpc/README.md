@@ -9,9 +9,10 @@ This CloudFormation template:
 * creates and associates Network Acl rules 
 * creates and associates Route rules
 
-Note that if this template is run in a region in which there is no *(main) Route Table*, *(default) Security Group* or
-*(default) Network Acl* that the act of creating the VPC will create these entities in addition to any Route Table(s), Security Group(s) or 
-Network Acl(s) defined in the template.
+__Note__ - running this template in a region which does not contain the following will create these resources:
+* (main) Route Table
+* (default) Security Group
+* (default) Network Acl 
 
 ### Summary 
 * VPC
@@ -19,11 +20,15 @@ Network Acl(s) defined in the template.
         * provides access to internet
         * attached to VPC via VPC Gateway Attachment
     * Network Acl (optional)
-        * provides rules for inbound and outbound traffic (defined in Network Acl Entry)
-        * can be applied to VPC or subnet
+        * provides rules for inbound and outbound subnet traffic (defined in Network Acl Entry)
+        * associated with VPC
     * Route Table
         * provides routing rules (defined in Route entries)
-        * can be applied to VPC or subnet
+        * associated with VPC
+    
+__Note__ - the Network Acl and Route Table created in this template are not used here but are set-up as a convenience for use by the subnet templates.
+* Network Acl in this case allows all types (protocol = -1) of traffic (e.g., ssh, tcp) to/from any address (0.0.0.0/0)
+* Route Table is set-up so that traffic originating from within subnet destined for any address (0.0.0.0/0) will be directed to the Internet Gateway    
     
 ### Resources
 

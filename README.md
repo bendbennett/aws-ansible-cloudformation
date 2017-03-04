@@ -9,11 +9,11 @@ provisioning of AWS resources.
 * Set-up Ansible for controlling AWS - [docs](http://docs.ansible.com/ansible/guide_aws.html)
  
 ## Example 
-To provision a VPC with 2 public and 2 private subnets run the following:
+To provision a VPC with 2 public and 2 private subnets:
  
     cd ansible/
     ansible-playbook vpc.yml
     
-To take down the subnets and VPC run 
+To take down the subnets and VPC: 
     
     ansible-playbook vpc-down.yml
