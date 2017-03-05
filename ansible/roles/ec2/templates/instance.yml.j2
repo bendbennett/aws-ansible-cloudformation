@@ -41,7 +41,7 @@ Resources:
       MaxSize: { Ref: AutoScalingGroupMaxSize }
       MinSize: { Ref: AutoScalingGroupMinSize }
       VPCZoneIdentifier:
-{% for value in ec2.auto_scaling_group_public.vpc_zone_identifier %}
+{% for value in item.value %}
         - Fn::ImportValue: {{ value }}
 {% endfor %}
   LaunchConfiguration:

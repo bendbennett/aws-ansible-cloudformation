@@ -89,5 +89,14 @@
         "SubnetId": { "Ref": "Subnet" }
       }
     }
+  },
+  "Outputs": {
+    "SubnetId": {
+      "Description": "Private Subnet ID",
+      "Value": { "Ref": "Subnet" },
+      "Export": {
+        "Name": { "Fn::Sub": "${AWS::StackName}-subnet::id" }
+      }
+    }
   }
 }
