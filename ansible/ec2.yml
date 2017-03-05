@@ -1,0 +1,5 @@
+- hosts: default
+  connection: local
+  gather_facts: false
+  roles:
+    - ec2

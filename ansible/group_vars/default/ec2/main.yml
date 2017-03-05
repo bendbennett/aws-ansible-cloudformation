@@ -1,0 +1,11 @@
+region: eu-west-2
+
+ec2:
+  auto_scaling_group_public:
+    vpc_zone_identifier:
+      - cf-subnet-public-1-subnet::id
+      - cf-subnet-public-2-subnet::id
+  auto_scaling_group_private:
+    vpc_zone_identifier:
+      - cf-subnet-private-1-subnet::id
+      - cf-subnet-private-2-subnet::id

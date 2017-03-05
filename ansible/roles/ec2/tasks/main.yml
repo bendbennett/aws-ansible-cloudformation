@@ -1,0 +1,11 @@
+- name: render cloudformation auto-scaling-group
+  template: src=instance.yml.j2 dest=roles/ec2/templates/instance-public.yml
+  with_dict: "{{ ec2.auto_scaling_group_public }}"
+
+- name: cloudformation - ec2
+  cloudformation:
+    stack_name: cf-ec2-auto-scaling-group-public
+    state: "present"
+    region: eu-west-2
+    disable_rollback: true
+    template: roles/ec2/templates/instance-public.yml

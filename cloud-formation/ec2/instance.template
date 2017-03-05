@@ -1,0 +1,84 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "EC2 Instance",
+  "Parameters": {
+    "AutoScalingGroupDesiredCapacity": {
+      "Type": "Number",
+      "Default": 2
+    },
+    "AutoScalingGroupMaxSize": {
+      "Type": "Number",
+      "Default": 3
+    },
+    "AutoScalingGroupMinSize": {
+      "Type": "Number",
+      "Default": 1
+    },
+    "AutoScalingGroupVPCZoneIdentifier": {
+      "Type": "String",
+      "Default": "cf-subnet-public-1-subnet::id"
+    },
+    "LaunchConfigurationAssociatePublicIpAddress": {
+      "Type": "String",
+      "Default": "true"
+    },
+    "LaunchConfigurationImageId": {
+      "Type": "String",
+      "Default": "ami-f1949e95"
+    },
+    "LaunchConfigurationInstanceType": {
+      "Type": "String",
+      "Default": "t2.micro"
+    },
+    "LaunchConfigurationKeyName": {
+      "Type": "String",
+      "Default": "synaptology-administrator"
+    },
+    "VPCStackName": {
+      "Type": "String",
+      "Default": "cf-vpc"
+    }
+  },
+  "Resources": {
+    "AutoScalingGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "DesiredCapacity": { "Ref": "AutoScalingGroupDesiredCapacity" },
+        "HealthCheckType": "EC2",
+        "LaunchConfigurationName": { "Ref": "LaunchConfiguration" },
+        "MaxSize": { "Ref": "AutoScalingGroupMaxSize"},
+        "MinSize": { "Ref": "AutoScalingGroupMinSize"},
+        "VPCZoneIdentifier": [ { "Fn::ImportValue": { "Ref": "AutoScalingGroupVPCZoneIdentifier" } } ]
+      }
+    },
+    "LaunchConfiguration": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "Properties": {
+        "AssociatePublicIpAddress": { "Ref": "LaunchConfigurationAssociatePublicIpAddress" },
+        "ImageId": { "Ref": "LaunchConfigurationImageId" },
+        "InstanceType": { "Ref": "LaunchConfigurationInstanceType" },
+        "KeyName": { "Ref": "LaunchConfigurationKeyName" },
+        "SecurityGroups": [ { "Ref": "SecurityGroupInstance" } ]
+      }
+    },
+    "SecurityGroupInstance": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Allow all traffic from anywhere",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "IpProtocol": "-1"
+          }
+        ],
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": { "Fn::ImportValue": { "Fn::Sub": "${VPCStackName}-vpc::id" } }
+      }
+    }
+  }
+}
