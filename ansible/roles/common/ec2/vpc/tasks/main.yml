@@ -6,4 +6,7 @@
     disable_rollback: true
     template: "{{ vpc_template }}"
     template_parameters:
-      VPCCidrBlock: "{{ vpc.cidr_block }}"
+      CidrBlock: "{{ vpc.cidr_block }}"
+      EnableDnsHostnames: "{{ vpc.enable_dns_hostnames }}"
+      EnableDnsSupport: "{{ vpc.enable_dns_support }}"
+      InstanceTenancy: "{{ vpc.instance_tenancy }}"

@@ -1,0 +1,5 @@
+- name: cloudformation - vpc
+  cloudformation:
+    stack_name: "{{ vpc.stack_name }}"
+    state: "absent"
+    region: "{{ region }}"

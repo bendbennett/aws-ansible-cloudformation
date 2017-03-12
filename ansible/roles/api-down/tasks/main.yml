@@ -1,0 +1,1 @@
+- include: ../../common/ec2/vpc-down/tasks/main.yml

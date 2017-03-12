@@ -3,7 +3,16 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: "VPC"
 
 Parameters:
-  VPCCidrBlock:
+  CidrBlock:
+    Type: String
+
+  EnableDnsHostnames:
+    Type: String
+
+  EnableDnsSupport:
+    Type: String
+
+  InstanceTenancy:
     Type: String
 
 Resources:
@@ -18,10 +27,10 @@ Resources:
   VPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: { Ref: VPCCidrBlock }
-      EnableDnsHostnames: true
-      EnableDnsSupport: true
-      InstanceTenancy: "default"
+      CidrBlock: { Ref: CidrBlock }
+      EnableDnsHostnames: { Ref: EnableDnsHostnames }
+      EnableDnsSupport: { Ref: EnableDnsSupport }
+      InstanceTenancy: { Ref: InstanceTenancy }
       Tags:
         - Key: "Name"
           Value:
