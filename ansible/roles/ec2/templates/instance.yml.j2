@@ -5,7 +5,7 @@ Description: "EC2 Instance"
 Parameters:
   AutoScalingGroupDesiredCapacity:
     Type: "Number"
-    Default: 2
+    Default: 1
   AutoScalingGroupMaxSize:
     Type: "Number"
     Default: 3
@@ -41,7 +41,7 @@ Resources:
       MaxSize: { Ref: AutoScalingGroupMaxSize }
       MinSize: { Ref: AutoScalingGroupMinSize }
       VPCZoneIdentifier:
-{% for value in item.value %}
+{% for value in stack.vpc_zone_identifier_public %}
         - Fn::ImportValue: {{ value }}
 {% endfor %}
   LaunchConfiguration:

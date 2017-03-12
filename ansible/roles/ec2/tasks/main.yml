@@ -1,23 +1,23 @@
 - name: render cloudformation auto-scaling-group public template
   template: src=instance.yml.j2 dest=roles/ec2/templates-generated/instance-public.yml
-  with_dict: { subnets: "{{ vpc_zone_identifier_public }}" }
+  with_items: "{{ stack }}"
 
-- name: cloudformation - ec2 - auto-scaling-group - public
-  cloudformation:
-    stack_name: cf-ec2-auto-scaling-group-public
-    state: "present"
-    region: eu-west-2
-    disable_rollback: true
-    template: roles/ec2/templates-generated/instance-public.yml
+#- name: cloudformation - ec2 - auto-scaling-group - public
+#  cloudformation:
+#    stack_name: cf-ec2-auto-scaling-group-public
+#    state: "present"
+#    region: eu-west-2
+#    disable_rollback: true
+#    template: roles/ec2/templates-generated/instance-public.yml
 
-- name: render cloudformation auto-scaling-group private template
-  template: src=instance.yml.j2 dest=roles/ec2/templates-generated/instance-private.yml
-  with_dict: { subnets: "{{ vpc_zone_identifier_private }}" }
-
-- name: cloudformation - ec2 - auto-scaling-group - private
-  cloudformation:
-    stack_name: cf-ec2-auto-scaling-group-private
-    state: "present"
-    region: eu-west-2
-    disable_rollback: true
-    template: roles/ec2/templates-generated/instance-private.yml
+#- name: render cloudformation auto-scaling-group private template
+#  template: src=instance.yml.j2 dest=roles/ec2/templates-generated/instance-private.yml
+#  with_dict: { subnets: "{{ vpc_zone_identifier_private }}" }
+#
+#- name: cloudformation - ec2 - auto-scaling-group - private
+#  cloudformation:
+#    stack_name: cf-ec2-auto-scaling-group-private
+#    state: "present"
+#    region: eu-west-2
+#    disable_rollback: true
+#    template: roles/ec2/templates-generated/instance-private.yml

@@ -1,6 +1,7 @@
-vpc_zone_identifier_public:
-  - cf-subnet-public-1-subnet::id
-  - cf-subnet-public-2-subnet::id
+stack:
+  vpc_zone_identifier_public:
+    - cf-subnet-public-1-subnet::id
+    - cf-subnet-public-2-subnet::id
 
 vpc_zone_identifier_private:
   - cf-subnet-private-1-subnet::id
