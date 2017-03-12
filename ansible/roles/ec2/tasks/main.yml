@@ -1,5 +1,5 @@
 - name: render cloudformation auto-scaling-group public template
-  template: src=instance.yml.j2 dest=roles/ec2/templates-generated/instance-public.yml
+  template: src="{{ ec2.template }}" dest=roles/ec2/templates-generated/instance-public.yml
   with_items: "{{ stack }}"
 
 #- name: cloudformation - ec2 - auto-scaling-group - public

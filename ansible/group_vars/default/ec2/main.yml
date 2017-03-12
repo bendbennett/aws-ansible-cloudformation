@@ -1,3 +1,6 @@
+ec2:
+  template: roles/ec2/templates/instance.yml.j2
+
 stack:
   vpc_zone_identifier_public:
     - cf-subnet-public-1-subnet::id

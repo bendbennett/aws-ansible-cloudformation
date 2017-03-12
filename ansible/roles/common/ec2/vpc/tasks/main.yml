@@ -1,0 +1,9 @@
+- name: cloudformation - vpc
+  cloudformation:
+    stack_name: "{{ vpc.stack_name }}"
+    state: "present"
+    region: "{{ region }}"
+    disable_rollback: true
+    template: "{{ vpc_template }}"
+    template_parameters:
+      VPCCidrBlock: "{{ vpc.cidr_block }}"
