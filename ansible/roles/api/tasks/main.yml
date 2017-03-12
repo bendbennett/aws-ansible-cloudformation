@@ -1,2 +1,2 @@
 - include: ../../common/ec2/vpc/tasks/main.yml
-#- include: ../../ec2/tasks/main.yml
+- include: ../../common/ec2/network-acl/tasks/main.yml

@@ -1,0 +1,14 @@
+- name: cloudformation - ec2 - network-acl
+  cloudformation:
+    stack_name: "{{ network_acl.stack_name }}"
+    state: "present"
+    region: "{{ region }}"
+    disable_rollback: true
+    template: "{{ network_acl_template }}"
+    template_parameters:
+      VpcStackName: "{{ network_acl.vpc_stack_name }}"
+
+#      CidrBlock: "{{ vpc.cidr_block }}"
+#      EnableDnsHostnames: "{{ vpc.enable_dns_hostnames }}"
+#      EnableDnsSupport: "{{ vpc.enable_dns_support }}"
+#      InstanceTenancy: "{{ vpc.instance_tenancy }}"

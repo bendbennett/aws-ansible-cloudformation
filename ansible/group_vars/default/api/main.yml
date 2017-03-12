@@ -8,3 +8,6 @@ vpc:
   instance_tenancy: default
   stack_name: cf-vpc
 
+network_acl:
+  stack_name: cf-network-acl
+  vpc_stack_name: "{{ vpc.stack_name }}"
