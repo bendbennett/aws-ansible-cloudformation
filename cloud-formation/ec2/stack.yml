@@ -36,7 +36,7 @@ Resources:
     Properties:
       Cluster:
         Ref: "ECSCluster"
-      DesiredCount: 1
+      DesiredCount: 2
       LoadBalancers:
         - ContainerName: "nginx"
           ContainerPort: 80
@@ -55,7 +55,7 @@ Resources:
           Essential: true
           Image: "nginx"
           Memory: 128
-          Cpu: 1
+          Cpu: 1024
           PortMappings:
             - ContainerPort: 80
               HostPort: 80
@@ -238,10 +238,13 @@ Resources:
   SecurityGroupInstance:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: "Allow all traffic from anywhere"
+      GroupDescription: "Security Group for EC2 instance(s) - only allow traffic via the Load Balancer"
       SecurityGroupIngress:
-        - CidrIp: "0.0.0.0/0"
-          IpProtocol: -1
+        - FromPort: 80
+          IpProtocol: "tcp"
+          SourceSecurityGroupId:
+            Ref: SecurityGroupLoadBalancer
+          ToPort: 80
       VpcId:
         Fn::ImportValue: cf-vpc-vpc::id
 
