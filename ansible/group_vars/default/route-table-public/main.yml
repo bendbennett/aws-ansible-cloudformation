@@ -1,0 +1,2 @@
+
+route_table_public_template: ../cloud-formation/ec2/route-table-public.yml

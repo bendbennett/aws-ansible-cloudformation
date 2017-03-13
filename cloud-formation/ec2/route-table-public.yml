@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Route Table - Public"
+
+Parameters:
+  DestinationCidrBlock:
+    Type: String
+
+  VpcStackName:
+    Type: String
+
+Resources:
+  Route:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: { Ref: DestinationCidrBlock }
+      GatewayId:
+        Fn::ImportValue:
+          Fn::Sub: ${VpcStackName}-internet::gateway::id
+      RouteTableId: { Ref: RouteTable }
+
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Fn::ImportValue:
+          Fn::Sub: ${VpcStackName}-vpc::id
+      Tags:
+        - Key: "Name"
+          Value:
+            Fn::Sub: ${AWS::StackName}
+
+Outputs:
+  RouteTablePublicId:
+    Description: "Route Table Public Id"
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-route::table::id
+    Value: { Ref: RouteTable }

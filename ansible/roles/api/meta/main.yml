@@ -1,3 +1,4 @@
 dependencies:
   - { role: common/ec2/vpc }
   - { role: common/ec2/network-acl }
+  - { role: common/ec2/route-table-public }

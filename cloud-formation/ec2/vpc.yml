@@ -43,6 +43,13 @@ Resources:
       VpcId: { Ref: VPC }
 
 Outputs:
+  InternetGatewayId:
+    Description: "Internet Gateway Id"
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-internet::gateway::id
+    Value: { Ref: InternetGateway }
+
   VPCId:
     Description: "VPC Id"
     Export:

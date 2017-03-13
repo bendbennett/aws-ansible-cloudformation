@@ -19,3 +19,8 @@ network_acl:
   rule_number_egress: 100
   rule_number_ingress: 100
   vpc_stack_name: "{{ vpc.stack_name }}"
+
+route_table_public:
+  stack_name: cf-route-table-public
+  destination_cidr_block: 0.0.0.0/0
+  vpc_stack_name: "{{ vpc.stack_name }}"

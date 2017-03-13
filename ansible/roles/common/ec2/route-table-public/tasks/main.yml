@@ -1,0 +1,10 @@
+- name: cloudformation - ec2 - route-table-public
+  cloudformation:
+    stack_name: "{{ route_table_public.stack_name }}"
+    state: "present"
+    region: "{{ region }}"
+    disable_rollback: true
+    template: "{{ route_table_public_template }}"
+    template_parameters:
+      DestinationCidrBlock: "{{ route_table_public.destination_cidr_block }}"
+      VpcStackName: "{{ route_table_public.vpc_stack_name }}"

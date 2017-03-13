@@ -63,7 +63,7 @@ Resources:
       RuleNumber: { Ref: RuleNumberIngress }
 
 Outputs:
-  NetworkAcl:
+  NetworkAclId:
     Description: "Network Acl Id"
     Export:
       Name:
