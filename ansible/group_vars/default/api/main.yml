@@ -21,22 +21,22 @@ network_acl:
   vpc_stack_name: "{{ vpc.stack_name }}"
 
 route_table_public:
-  stack_name: cf-route-table-public
-  destination_cidr_block: 0.0.0.0/0
-  vpc_stack_name: "{{ vpc.stack_name }}"
+  - stack_name: cf-route-table-public-1
+    destination_cidr_block: 0.0.0.0/0
+    vpc_stack_name: "{{ vpc.stack_name }}"
 
 subnet_public:
   - stack_name: cf-subnet-public-1
     availability_zone: eu-west-2a
     cidr_block: 10.0.0.0/24
     network_acl_stack_name: "{{ network_acl.stack_name }}"
-    route_table_public_stack_name: "{{ route_table_public.stack_name }}"
+    route_table_public_stack_name: "{{ route_table_public[0].stack_name }}"
     vpc_stack_name: "{{ vpc.stack_name }}"
   - stack_name: cf-subnet-public-2
     availability_zone: eu-west-2b
     cidr_block: 10.0.1.0/24
     network_acl_stack_name: "{{ network_acl.stack_name }}"
-    route_table_public_stack_name: "{{ route_table_public.stack_name }}"
+    route_table_public_stack_name: "{{ route_table_public[0].stack_name }}"
     vpc_stack_name: "{{ vpc.stack_name }}"
 
 nat_gateway:
@@ -44,3 +44,13 @@ nat_gateway:
     subnet_public_stack_name: "{{ subnet_public[0].stack_name }}"
   - stack_name: cf-nat-gateway-2
     subnet_public_stack_name: "{{ subnet_public[1].stack_name }}"
+
+route_table_private:
+  - stack_name: cf-route-table-private-1
+    destination_cidr_block: 0.0.0.0/0
+    nat_gateway_stack_name: "{{ nat_gateway[0].stack_name }}"
+    vpc_stack_name: "{{ vpc.stack_name }}"
+  - stack_name: cf-route-table-private-2
+    destination_cidr_block: 0.0.0.0/0
+    nat_gateway_stack_name: "{{ nat_gateway[1].stack_name }}"
+    vpc_stack_name: "{{ vpc.stack_name }}"

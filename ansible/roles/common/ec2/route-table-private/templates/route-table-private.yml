@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Route Table - private"
+
+Parameters:
+  DestinationCidrBlock:
+    Type: String
+
+  NatGatewayStackName:
+    Type: String
+    Default: ""
+
+  VpcStackName:
+    Type: String
+
+Resources:
+  Route:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: { Ref: DestinationCidrBlock }
+      NatGatewayId:
+        Fn::ImportValue:
+          Fn::Sub: ${NatGatewayStackName}-nat::gateway::id
+      RouteTableId: { Ref: RouteTable }
+
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Fn::ImportValue:
+          Fn::Sub: ${VpcStackName}-vpc::id
+      Tags:
+        - Key: "Name"
+          Value:
+            Fn::Sub: ${AWS::StackName}
+
+Outputs:
+  RouteTablePublicId:
+    Description: "Route Table Private Id"
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-route::table::id
+    Value: { Ref: RouteTable }

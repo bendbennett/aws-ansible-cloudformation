@@ -1,6 +1,6 @@
-- name: cloudformation - ec2 - route-table-public - down
+- name: cloudformation - ec2 - route-table-private - down
   cloudformation:
     stack_name: "{{ item.stack_name }}"
     state: "absent"
     region: "{{ region }}"
-  with_items: "{{ route_table_public }}"
+  with_items: "{{ route_table_private }}"

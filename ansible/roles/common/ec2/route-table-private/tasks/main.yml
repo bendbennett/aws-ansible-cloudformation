@@ -1,11 +1,12 @@
-- name: cloudformation - ec2 - route-table-public
+- name: cloudformation - ec2 - route-table-private
   cloudformation:
     stack_name: "{{ item.stack_name }}"
     state: "present"
     region: "{{ region }}"
     disable_rollback: true
-    template: roles/common/ec2/route-table-public/templates/route-table-public.yml
+    template: roles/common/ec2/route-table-private/templates/route-table-private.yml
     template_parameters:
       DestinationCidrBlock: "{{ item.destination_cidr_block }}"
+      NatGatewayStackName: "{{ item.nat_gateway_stack_name }}"
       VpcStackName: "{{ item.vpc_stack_name }}"
-  with_items: "{{ route_table_public }}"
+  with_items: "{{ route_table_private }}"
