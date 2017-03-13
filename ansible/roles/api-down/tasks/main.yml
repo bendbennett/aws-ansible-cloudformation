@@ -1,2 +1,0 @@
-- include: ../../common/ec2/network-acl-down/tasks/main.yml
-- include: ../../common/ec2/vpc-down/tasks/main.yml

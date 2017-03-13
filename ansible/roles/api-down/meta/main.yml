@@ -1,0 +1,3 @@
+dependencies:
+  - { role: common/ec2/network-acl-down }
+  - { role: common/ec2/vpc-down }
