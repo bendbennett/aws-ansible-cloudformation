@@ -1,4 +1,4 @@
-- name: cloudformation - subnet - public
+- name: cloudformation - ec2- subnet - public
   cloudformation:
     stack_name: "{{ item.stack_name }}"
     state: "present"

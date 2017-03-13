@@ -1,0 +1,6 @@
+- name: cloudformation - ec2 - nat-gateway - down
+  cloudformation:
+    stack_name: "{{ nat_gateway.stack_name }}"
+    state: "absent"
+    region: "{{ region }}"
+  with_items: "{{ nat_gateway }}"
