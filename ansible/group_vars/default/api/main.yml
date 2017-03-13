@@ -24,3 +24,18 @@ route_table_public:
   stack_name: cf-route-table-public
   destination_cidr_block: 0.0.0.0/0
   vpc_stack_name: "{{ vpc.stack_name }}"
+
+subnet_public:
+  - stack_name: cf-subnet-public-1
+    availability_zone: eu-west-2a
+    cidr_block: 10.0.0.0/24
+    network_acl_stack_name: "{{ network_acl.stack_name }}"
+    route_table_public_stack_name: "{{ route_table_public.stack_name }}"
+    vpc_stack_name: "{{ vpc.stack_name }}"
+  - stack_name: cf-subnet-public-2
+    availability_zone: eu-west-2b
+    cidr_block: 10.0.1.0/24
+    network_acl_stack_name: "{{ network_acl.stack_name }}"
+    route_table_public_stack_name: "{{ route_table_public.stack_name }}"
+    vpc_stack_name: "{{ vpc.stack_name }}"
+

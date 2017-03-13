@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: "Route Table - Public"
+Description: "Route Table - public"
 
 Parameters:
   DestinationCidrBlock:

@@ -1,0 +1,14 @@
+- name: cloudformation - subnet - public
+  cloudformation:
+    stack_name: "{{ item.stack_name }}"
+    state: "present"
+    region: "{{ region }}"
+    disable_rollback: true
+    template: "{{ subnet_public_template }}"
+    template_parameters:
+      AvailabilityZone: "{{ item.availability_zone }}"
+      CidrBlock: "{{ item.cidr_block }}"
+      NetworkAclStackName: "{{ item.network_acl_stack_name }}"
+      RouteTablePublicStackName: "{{ item.route_table_public_stack_name }}"
+      VpcStackName: "{{ item.vpc_stack_name }}"
+  with_items: "{{ subnet_public }}"

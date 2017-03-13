@@ -1,19 +1,9 @@
 
 vpc_template: ../cloud-formation/ec2/vpc.yml
 
-#subnet_public_template: ../cloud-formation/vpc/subnet-public.template
 #subnet_private_template: ../cloud-formation/vpc/subnet-private.template
 #
-#public_subnets:
-#  subnet_1:
-#    availability_zone: eu-west-2a
-#    cidr_block: 10.0.0.0/24
-#    stack_name: cf-subnet-public-1
-#  subnet_2:
-#    availability_zone: eu-west-2b
-#    cidr_block: 10.0.1.0/24
-#    stack_name: cf-subnet-public-2
-#
+
 #private_subnets:
 #  subnet_1:
 #    availability_zone: eu-west-2a
