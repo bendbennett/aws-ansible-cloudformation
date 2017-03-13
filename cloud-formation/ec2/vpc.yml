@@ -45,7 +45,7 @@ Resources:
 Outputs:
   VPCId:
     Description: "VPC Id"
-    Value: { Ref: VPC }
     Export:
       Name:
         Fn::Sub: ${AWS::StackName}-vpc::id
+    Value: { Ref: VPC }

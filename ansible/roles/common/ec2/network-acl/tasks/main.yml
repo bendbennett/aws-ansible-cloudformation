@@ -6,9 +6,12 @@
     disable_rollback: true
     template: "{{ network_acl_template }}"
     template_parameters:
+      CidrBlockEgress: "{{ network_acl.cidr_block_egress }}"
+      CidrBlockIngress: "{{ network_acl.cidr_block_ingress }}"
+      ProtocolEgress: "{{ network_acl.protocol_egress }}"
+      ProtocolIngress: "{{ network_acl.protocol_ingress }}"
+      RuleActionEgress: "{{ network_acl.rule_action_egress }}"
+      RuleActionIngress: "{{ network_acl.rule_action_ingress }}"
+      RuleNumberEgress: "{{ network_acl.rule_number_egress }}"
+      RuleNumberIngress: "{{ network_acl.rule_number_ingress }}"
       VpcStackName: "{{ network_acl.vpc_stack_name }}"
-
-#      CidrBlock: "{{ vpc.cidr_block }}"
-#      EnableDnsHostnames: "{{ vpc.enable_dns_hostnames }}"
-#      EnableDnsSupport: "{{ vpc.enable_dns_support }}"
-#      InstanceTenancy: "{{ vpc.instance_tenancy }}"

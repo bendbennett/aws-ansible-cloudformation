@@ -3,6 +3,30 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: "Network Acl"
 
 Parameters:
+  CidrBlockEgress:
+    Type: String
+
+  CidrBlockIngress:
+    Type: String
+
+  ProtocolEgress:
+    Type: String
+
+  ProtocolIngress:
+    Type: String
+
+  RuleActionEgress:
+    Type: String
+
+  RuleActionIngress:
+    Type: String
+
+  RuleNumberEgress:
+    Type: String
+
+  RuleNumberIngress:
+    Type: String
+
   VpcStackName:
     Type: String
 
@@ -18,82 +42,30 @@ Resources:
           Value:
             Fn::Sub: ${AWS::StackName}
 
+  NetworkAclEntryEgress:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      CidrBlock: { Ref: CidrBlockEgress }
+      Egress: true
+      NetworkAclId: { Ref: NetworkAcl }
+      Protocol: { Ref: ProtocolEgress }
+      RuleAction: { Ref: RuleActionEgress }
+      RuleNumber: { Ref: RuleNumberEgress }
 
-#    "NetworkAclEntryEgress": {
-#      "Type" : "AWS::EC2::NetworkAclEntry",
-#      "Properties" : {
-#        "CidrBlock" : "0.0.0.0/0",
-#        "Egress" : "true",
-#        "NetworkAclId" : { "Ref" : "NetworkAcl" },
-#        "Protocol" : "-1",
-#        "RuleAction" : "allow",
-#        "RuleNumber" : "100"
-#      }
-#    },
-#    "NetworkAclEntryIngress": {
-#        "Type" : "AWS::EC2::NetworkAclEntry",
-#        "Properties" : {
-#          "CidrBlock" : "0.0.0.0/0",
-#          "Egress" : "false",
-#          "NetworkAclId" : { "Ref" : "NetworkAcl" },
-#          "Protocol" : "-1",
-#          "RuleAction" : "allow",
-#          "RuleNumber" : "100"
-#        }
-#    },
-#    "Route" : {
-#      "Type" : "AWS::EC2::Route",
-#      "DependsOn" : "VPCGatewayAttachment",
-#      "Properties" : {
-#        "DestinationCidrBlock" : { "Ref": "RouteDestinationCidrBlock" },
-#        "GatewayId" : { "Ref" : "InternetGateway" },
-#        "RouteTableId" : { "Ref" : "RouteTable" }
-#      }
-#    },
-#    "RouteTable" : {
-#      "Type" : "AWS::EC2::RouteTable",
-#      "Properties" : {
-#        "VpcId" : { "Ref" : "VPC" },
-#        "Tags": [ { "Key": "Name", "Value": { "Ref": "RouteTableName"} } ] }
-#    },
-#    "VPC": {
-#      "Type": "AWS::EC2::VPC",
-#      "Properties": {
-#        "CidrBlock": { "Ref": "VPCCidrBlock" },
-#        "EnableDnsHostnames": "true",
-#        "EnableDnsSupport": "true",
-#        "InstanceTenancy": "default",
-#        "Tags": [ { "Key": "Name", "Value": { "Ref": "VPCName"} } ] }
-#    },
-#    "VPCGatewayAttachment" : {
-#      "Type" : "AWS::EC2::VPCGatewayAttachment",
-#      "Properties" : {
-#        "InternetGatewayId" : { "Ref" : "InternetGateway" },
-#        "VpcId" : { "Ref" : "VPC" }
-#      }
-#    }
-#  },
-#  "Outputs": {
-#    "NetworkAclId": {
-#      "Description": "Network Acl Id",
-#      "Value": { "Ref": "NetworkAcl" },
-#      "Export": {
-#        "Name": { "Fn::Sub": "${AWS::StackName}-network::acl::id" }
-#      }
-#    },
-#    "RouteTableId": {
-#      "Description": "Route Table Id",
-#      "Value": { "Ref": "RouteTable" },
-#      "Export": {
-#        "Name": { "Fn::Sub": "${AWS::StackName}-route::table::id" }
-#      }
-#    },
-#    "VPCId": {
-#      "Description": "VPC Id",
-#      "Value": { "Ref": "VPC" },
-#      "Export": {
-#        "Name": { "Fn::Sub": "${AWS::StackName}-vpc::id"}
-#      }
-#    }
-#  }
-#}
+  NetworkAclEntryIngress:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      CidrBlock: { Ref: CidrBlockIngress }
+      Egress: false
+      NetworkAclId: { Ref: NetworkAcl }
+      Protocol: { Ref: ProtocolIngress }
+      RuleAction: { Ref: RuleActionIngress }
+      RuleNumber: { Ref: RuleNumberIngress }
+
+Outputs:
+  NetworkAcl:
+    Description: "Network Acl Id"
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-network::acl::id
+    Value: { Ref: "NetworkAcl" }

@@ -1,4 +1,4 @@
-- name: cloudformation - ec2 - vpc
+- name: cloudformation - ec2 - vpc - down
   cloudformation:
     stack_name: "{{ vpc.stack_name }}"
     state: "absent"

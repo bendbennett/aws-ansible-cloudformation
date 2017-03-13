@@ -1,0 +1,5 @@
+- name: cloudformation - ec2 - network-acl - down
+  cloudformation:
+    stack_name: "{{ network_acl.stack_name }}"
+    state: "absent"
+    region: "{{ region }}"

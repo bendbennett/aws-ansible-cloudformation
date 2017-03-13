@@ -2,12 +2,20 @@
 region: eu-west-2
 
 vpc:
+  stack_name: cf-vpc
   cidr_block: 10.0.0.0/16
   enable_dns_hostnames: true
   enable_dns_support: true
   instance_tenancy: default
-  stack_name: cf-vpc
 
 network_acl:
   stack_name: cf-network-acl
+  cidr_block_egress: 0.0.0.0/0
+  cidr_block_ingress: 0.0.0.0/0
+  protocol_egress: -1
+  protocol_ingress: -1
+  rule_action_egress: allow
+  rule_action_ingress: allow
+  rule_number_egress: 100
+  rule_number_ingress: 100
   vpc_stack_name: "{{ vpc.stack_name }}"
