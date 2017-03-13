@@ -1,5 +1,5 @@
 
-vpc_template: ../cloud-formation/ec2/vpc.yml
+#vpc_template: ../cloud-formation/ec2/vpc.yml
 
 #subnet_private_template: ../cloud-formation/vpc/subnet-private.template
 #

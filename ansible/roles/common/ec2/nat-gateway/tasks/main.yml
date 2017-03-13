@@ -4,7 +4,7 @@
     state: "present"
     region: "{{ region }}"
     disable_rollback: true
-    template: "{{ nat_gateway_template }}"
+    template: roles/common/ec2/nat-gateway/templates/nat-gateway.yml
     template_parameters:
       SubnetPublicStackName: "{{ item.subnet_public_stack_name }}"
   with_items: "{{ nat_gateway }}"

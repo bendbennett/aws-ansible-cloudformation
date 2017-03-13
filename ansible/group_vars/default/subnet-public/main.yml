@@ -1,2 +1,0 @@
-
-subnet_public_template: ../cloud-formation/ec2/subnet-public.yml

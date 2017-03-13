@@ -1,2 +1,0 @@
-
-nat_gateway_template: ../cloud-formation/ec2/nat-gateway.yml

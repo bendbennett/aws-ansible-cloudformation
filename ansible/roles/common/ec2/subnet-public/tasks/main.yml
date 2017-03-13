@@ -4,7 +4,7 @@
     state: "present"
     region: "{{ region }}"
     disable_rollback: true
-    template: "{{ subnet_public_template }}"
+    template: roles/common/ec2/subnet-public/templates/subnet-public.yml
     template_parameters:
       AvailabilityZone: "{{ item.availability_zone }}"
       CidrBlock: "{{ item.cidr_block }}"

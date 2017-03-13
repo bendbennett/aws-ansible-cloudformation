@@ -4,7 +4,7 @@
     state: "present"
     region: "{{ region }}"
     disable_rollback: true
-    template: "{{ network_acl_template }}"
+    template: roles/common/ec2/network-acl/templates/network-acl.yml
     template_parameters:
       CidrBlockEgress: "{{ network_acl.cidr_block_egress }}"
       CidrBlockIngress: "{{ network_acl.cidr_block_ingress }}"

@@ -4,7 +4,7 @@
     state: "present"
     region: "{{ region }}"
     disable_rollback: true
-    template: "{{ route_table_public_template }}"
+    template: roles/common/ec2/route-table-public/templates/route-table-public.yml
     template_parameters:
       DestinationCidrBlock: "{{ route_table_public.destination_cidr_block }}"
       VpcStackName: "{{ route_table_public.vpc_stack_name }}"

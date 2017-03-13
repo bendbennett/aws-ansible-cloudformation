@@ -4,7 +4,7 @@
     state: "present"
     region: "{{ region }}"
     disable_rollback: true
-    template: "{{ vpc_template }}"
+    template: roles/common/ec2/vpc/templates/vpc.yml
     template_parameters:
       CidrBlock: "{{ vpc.cidr_block }}"
       EnableDnsHostnames: "{{ vpc.enable_dns_hostnames }}"
