@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: "Subnet - public"
+Description: "Subnet"
 
 Parameters:
   AvailabilityZone:
@@ -12,7 +12,7 @@ Parameters:
   NetworkAclStackName:
     Type: String
 
-  RouteTablePublicStackName:
+  RouteTableStackName:
     Type: String
 
   VpcStackName:
@@ -45,12 +45,12 @@ Resources:
     Properties:
       RouteTableId:
         Fn::ImportValue:
-          Fn::Sub: ${RouteTablePublicStackName}-route::table::id
+          Fn::Sub: ${RouteTableStackName}-route::table::id
       SubnetId: { Ref: Subnet }
 
 Outputs:
-  SubnetPublicId:
-    Description: "Subnet Public Id"
+  SubnetId:
+    Description: "Subnet Id"
     Export:
       Name:
         Fn::Sub: ${AWS::StackName}-subnet::id

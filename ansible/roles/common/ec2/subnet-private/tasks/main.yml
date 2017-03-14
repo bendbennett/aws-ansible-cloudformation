@@ -1,4 +1,4 @@
-- name: cloudformation - ec2- subnet - public
+- name: cloudformation - ec2- subnet - private
   cloudformation:
     stack_name: "{{ item.stack_name }}"
     state: "present"
@@ -11,4 +11,4 @@
       NetworkAclStackName: "{{ item.network_acl_stack_name }}"
       RouteTableStackName: "{{ item.route_table_stack_name }}"
       VpcStackName: "{{ item.vpc_stack_name }}"
-  with_items: "{{ subnet_public }}"
+  with_items: "{{ subnet_private }}"

@@ -4,3 +4,4 @@ dependencies:
   - { role: common/ec2/route-table-public }
   - { role: common/ec2/subnet-public }
   - { role: common/ec2/route-table-private }
+  - { role: common/ec2/subnet-private }
