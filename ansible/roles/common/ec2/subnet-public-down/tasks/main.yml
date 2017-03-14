@@ -1,6 +1,0 @@
-- name: cloudformation - ec2 - subnet-public - down
-  cloudformation:
-    stack_name: "{{ item.stack_name }}"
-    state: "absent"
-    region: "{{ region }}"
-  with_items: "{{ subnet_public }}"

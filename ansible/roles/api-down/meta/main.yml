@@ -1,7 +1,2 @@
 dependencies:
-  - { role: common/ec2/subnet-private-down }
-  - { role: common/ec2/route-table-private-down }
-  - { role: common/ec2/subnet-public-down }
-  - { role: common/ec2/route-table-public-down }
-  - { role: common/ec2/network-acl-down }
-  - { role: common/ec2/vpc-down }
+  - { role: common/ec2/down }

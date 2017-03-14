@@ -1,0 +1,6 @@
+- name: cloudformation - ec2 - down
+  cloudformation:
+    stack_name: "{{ item }}"
+    state: "absent"
+    region: "{{ region }}"
+  with_items: "{{ down }}"
