@@ -1,2 +1,2 @@
 dependencies:
-  - { role: common/ec2/down }
+  - { role: common/down }
