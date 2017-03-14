@@ -7,6 +7,6 @@
     template: roles/common/ec2/route-table-private/templates/route-table-private.yml
     template_parameters:
       DestinationCidrBlock: "{{ item.destination_cidr_block }}"
-      NatGatewayStackName: "{{ item.nat_gateway_stack_name }}"
+      SubnetPublicStackName: "{{ item.subnet_public_stack_name }}"
       VpcStackName: "{{ item.vpc_stack_name }}"
   with_items: "{{ route_table_private }}"

@@ -6,21 +6,34 @@ Parameters:
   DestinationCidrBlock:
     Type: String
 
-  NatGatewayStackName:
+  SubnetPublicStackName:
     Type: String
-    Default: ""
 
   VpcStackName:
     Type: String
 
 Resources:
+  ElasticIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: "vpc"
+
+  NatGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId:
+        Fn::GetAtt:
+          - "ElasticIP"
+          - "AllocationId"
+      SubnetId:
+        Fn::ImportValue:
+          Fn::Sub: ${SubnetPublicStackName}-subnet::id
+
   Route:
     Type: AWS::EC2::Route
     Properties:
       DestinationCidrBlock: { Ref: DestinationCidrBlock }
-      NatGatewayId:
-        Fn::ImportValue:
-          Fn::Sub: ${NatGatewayStackName}-nat::gateway::id
+      NatGatewayId: { Ref: NatGateway}
       RouteTableId: { Ref: RouteTable }
 
   RouteTable:
@@ -35,7 +48,7 @@ Resources:
             Fn::Sub: ${AWS::StackName}
 
 Outputs:
-  RouteTablePublicId:
+  RouteTablePrivateId:
     Description: "Route Table Private Id"
     Export:
       Name:

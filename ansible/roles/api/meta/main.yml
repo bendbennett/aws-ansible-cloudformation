@@ -3,5 +3,4 @@ dependencies:
   - { role: common/ec2/network-acl }
   - { role: common/ec2/route-table-public }
   - { role: common/ec2/subnet-public }
-  - { role: common/ec2/nat-gateway }
   - { role: common/ec2/route-table-private }

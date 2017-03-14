@@ -39,18 +39,12 @@ subnet_public:
     route_table_public_stack_name: "{{ route_table_public[0].stack_name }}"
     vpc_stack_name: "{{ vpc.stack_name }}"
 
-nat_gateway:
-  - stack_name: cf-nat-gateway-1
-    subnet_public_stack_name: "{{ subnet_public[0].stack_name }}"
-  - stack_name: cf-nat-gateway-2
-    subnet_public_stack_name: "{{ subnet_public[1].stack_name }}"
-
 route_table_private:
   - stack_name: cf-route-table-private-1
     destination_cidr_block: 0.0.0.0/0
-    nat_gateway_stack_name: "{{ nat_gateway[0].stack_name }}"
+    subnet_public_stack_name: "{{ subnet_public[0].stack_name }}"
     vpc_stack_name: "{{ vpc.stack_name }}"
   - stack_name: cf-route-table-private-2
     destination_cidr_block: 0.0.0.0/0
-    nat_gateway_stack_name: "{{ nat_gateway[1].stack_name }}"
+    subnet_public_stack_name: "{{ subnet_public[1].stack_name }}"
     vpc_stack_name: "{{ vpc.stack_name }}"
