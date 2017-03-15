@@ -5,4 +5,5 @@ dependencies:
   - { role: common/ec2/subnet, subnet_items: "{{ subnet_public }}" }
   - { role: common/ec2/route-table, route_table_items: "{{ route_table_private }}" }
   - { role: common/ec2/subnet, subnet_items: "{{ subnet_private }}" }
-  - { role: common/ec2/security-group-cidr-ip, security_group_items: "{{ security_group_load_balancer }}" }
+  - { role: common/ec2/security-group, security_group_items: "{{ security_group_load_balancer }}" }
+  - { role: common/ec2/security-group, security_group_items: "{{ security_group_ec2_instance }}" }

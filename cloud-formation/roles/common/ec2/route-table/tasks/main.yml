@@ -1,4 +1,4 @@
-- name: cloudformation - ec2 - route-table-public
+- name: cloudformation - ec2 - route-table
   cloudformation:
     stack_name: "{{ item.stack_name }}"
     state: "present"

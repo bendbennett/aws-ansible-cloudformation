@@ -235,28 +235,28 @@ Resources:
         - Fn::ImportValue: cf-subnet-public-1-subnet::id
         - Fn::ImportValue: cf-subnet-public-2-subnet::id
 
-  SecurityGroupInstance:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: "Security Group for EC2 instance(s) - only allow traffic via the Load Balancer"
-      SecurityGroupIngress:
-        - FromPort: 80
-          IpProtocol: "tcp"
-          SourceSecurityGroupId:
-            Ref: SecurityGroupLoadBalancer
-          ToPort: 80
-      VpcId:
-        Fn::ImportValue: cf-vpc-vpc::id
-
-  SecurityGroupLoadBalancer:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: "Security Group for Load balancer"
-      SecurityGroupIngress:
-        - CidrIp: 0.0.0.0/0
-          FromPort: 80
-          IpProtocol: tcp
-          ToPort: 80
-      VpcId:
-        Fn::ImportValue: cf-vpc-vpc::id
+#  SecurityGroupInstance:
+#    Type: AWS::EC2::SecurityGroup
+#    Properties:
+#      GroupDescription: "Security Group for EC2 instance(s) - only allow traffic via the Load Balancer"
+#      SecurityGroupIngress:
+#        - FromPort: 80
+#          IpProtocol: "tcp"
+#          SourceSecurityGroupId:
+#            Ref: SecurityGroupLoadBalancer
+#          ToPort: 80
+#      VpcId:
+#        Fn::ImportValue: cf-vpc-vpc::id
+#
+#  SecurityGroupLoadBalancer:
+#    Type: AWS::EC2::SecurityGroup
+#    Properties:
+#      GroupDescription: "Security Group for Load balancer"
+#      SecurityGroupIngress:
+#        - CidrIp: 0.0.0.0/0
+#          FromPort: 80
+#          IpProtocol: tcp
+#          ToPort: 80
+#      VpcId:
+#        Fn::ImportValue: cf-vpc-vpc::id
 

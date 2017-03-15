@@ -71,10 +71,22 @@ security_group_load_balancer:
     cidr_ip: 0.0.0.0/0
     from_port: 80
     ip_protocol: tcp
+    security_group_type: "cidr_ip"
+    to_port: 80
+    vpc_stack_name: "{{ vpc.stack_name }}"
+
+security_group_ec2_instance:
+  - stack_name: cf-security-group-ec2-instance
+    from_port: 80
+    ip_protocol: tcp
+    security_group_stack_name: "{{ security_group_load_balancer[0].stack_name }}"
+    security_group_type: "source_security_group_id"
     to_port: 80
     vpc_stack_name: "{{ vpc.stack_name }}"
 
 down:
+  - "{{ security_group_ec2_instance[0].stack_name }}"
+  - "{{ security_group_load_balancer[0].stack_name }}"
   - "{{ subnet_private[1].stack_name }}"
   - "{{ subnet_private[0].stack_name }}"
   - "{{ route_table_private[1].stack_name }}"
