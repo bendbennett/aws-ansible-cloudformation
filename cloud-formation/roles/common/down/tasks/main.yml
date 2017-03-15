@@ -1,4 +1,4 @@
-- name: cloudformation - ec2 - down
+- name: cloudformation - down
   cloudformation:
     stack_name: "{{ item }}"
     state: "absent"

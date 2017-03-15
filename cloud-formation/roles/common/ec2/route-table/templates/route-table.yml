@@ -1,25 +1,42 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: "Route Table - private"
+Description: "Route Table"
 
 Parameters:
   DestinationCidrBlock:
     Type: String
 
+  GatewayType:
+    Type: String
+
   SubnetPublicStackName:
     Type: String
+    Default: ""
 
   VpcStackName:
     Type: String
 
+Conditions:
+  IsInternetGateway:
+    Fn::Equals:
+      - Ref: GatewayType
+      - "internet"
+
+  IsNatGateway:
+    Fn::Equals:
+      - Ref: GatewayType
+      - "nat"
+
 Resources:
   ElasticIP:
     Type: AWS::EC2::EIP
+    Condition: IsNatGateway
     Properties:
       Domain: "vpc"
 
   NatGateway:
     Type: AWS::EC2::NatGateway
+    Condition: IsNatGateway
     Properties:
       AllocationId:
         Fn::GetAtt:
@@ -31,6 +48,17 @@ Resources:
 
   Route:
     Type: AWS::EC2::Route
+    Condition: IsInternetGateway
+    Properties:
+      DestinationCidrBlock: { Ref: DestinationCidrBlock }
+      GatewayId:
+        Fn::ImportValue:
+          Fn::Sub: ${VpcStackName}-internet::gateway::id
+      RouteTableId: { Ref: RouteTable }
+
+  Route:
+    Type: AWS::EC2::Route
+    Condition: IsNatGateway
     Properties:
       DestinationCidrBlock: { Ref: DestinationCidrBlock }
       NatGatewayId: { Ref: NatGateway}
@@ -48,8 +76,8 @@ Resources:
             Fn::Sub: ${AWS::StackName}
 
 Outputs:
-  RouteTablePrivateId:
-    Description: "Route Table Private Id"
+  RouteTableId:
+    Description: "Route Table Id"
     Export:
       Name:
         Fn::Sub: ${AWS::StackName}-route::table::id

@@ -23,6 +23,7 @@ network_acl:
 route_table_public:
   - stack_name: cf-route-table-public-1
     destination_cidr_block: 0.0.0.0/0
+    gateway_type: "internet"
     vpc_stack_name: "{{ vpc.stack_name }}"
 
 subnet_public:
@@ -42,10 +43,12 @@ subnet_public:
 route_table_private:
   - stack_name: cf-route-table-private-1
     destination_cidr_block: 0.0.0.0/0
+    gateway_type: "nat"
     subnet_public_stack_name: "{{ subnet_public[0].stack_name }}"
     vpc_stack_name: "{{ vpc.stack_name }}"
   - stack_name: cf-route-table-private-2
     destination_cidr_block: 0.0.0.0/0
+    gateway_type: "nat"
     subnet_public_stack_name: "{{ subnet_public[1].stack_name }}"
     vpc_stack_name: "{{ vpc.stack_name }}"
 
@@ -61,6 +64,14 @@ subnet_private:
     cidr_block: 10.0.129.0/24
     network_acl_stack_name: "{{ network_acl.stack_name }}"
     route_table_stack_name: "{{ route_table_private[1].stack_name }}"
+    vpc_stack_name: "{{ vpc.stack_name }}"
+
+security_group_load_balancer:
+  - stack_name: cf-security-group-load-balancer
+    cidr_ip: 0.0.0.0/0
+    from_port: 80
+    ip_protocol: tcp
+    to_port: 80
     vpc_stack_name: "{{ vpc.stack_name }}"
 
 down:
