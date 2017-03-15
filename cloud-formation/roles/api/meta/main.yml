@@ -2,6 +2,6 @@ dependencies:
   - { role: common/ec2/vpc }
   - { role: common/ec2/network-acl }
   - { role: common/ec2/route-table-public }
-  - { role: common/ec2/subnet-public }
+  - { role: common/ec2/subnet, subnet_items: "{{ subnet_public }}" }
   - { role: common/ec2/route-table-private }
-  - { role: common/ec2/subnet-private }
+  - { role: common/ec2/subnet, subnet_items: "{{ subnet_private }}" }
