@@ -67,79 +67,79 @@ Resources:
       Roles:
         - Ref: IamRoleInstance
 
-  IamRoleInstance:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-          - Effect: "Allow"
-            Principal:
-              Service:
-                - "ec2.amazonaws.com"
-            Action:
-              - "sts:AssumeRole"
-      Path: "/"
-      Policies:
-        - PolicyName: "IamRoleInstance-ecs"
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: "Allow"
-                Action:
-                  - "ecs:DeregisterContainerInstance"
-                  - "ecs:DiscoverPollEndpoint"
-                  - "ecs:Poll"
-                  - "ecs:RegisterContainerInstance"
-                  - "ecs:StartTelemetrySession"
-                  - "ecs:Submit*"
-                Resource: "*"
-        - PolicyName: "IamRoleInstance-logs"
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: "Allow"
-                Action:
-                  - "logs:CreateLogStream"
-                  - "logs:PutLogEvents"
-                Resource:
-                  - "arn:aws:logs:*:*:*"
-        - PolicyName: "IamRoleInstance-ecr"
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: "Allow"
-                Action:
-                  - "ecr:GetAuthorizationToken"
-                  - "ecr:BatchCheckLayerAvailability"
-                  - "ecr:GetDownloadUrlForLayer"
-                  - "ecr:BatchGetImage"
-                Resource: "*"
+#  IamRoleInstance:
+#    Type: AWS::IAM::Role
+#    Properties:
+#      AssumeRolePolicyDocument:
+#        Statement:
+#          - Effect: "Allow"
+#            Principal:
+#              Service:
+#                - "ec2.amazonaws.com"
+#            Action:
+#              - "sts:AssumeRole"
+#      Path: "/"
+#      Policies:
+#        - PolicyName: "IamRoleInstance-ecs"
+#          PolicyDocument:
+#            Version: "2012-10-17"
+#            Statement:
+#              - Effect: "Allow"
+#                Action:
+#                  - "ecs:DeregisterContainerInstance"
+#                  - "ecs:DiscoverPollEndpoint"
+#                  - "ecs:Poll"
+#                  - "ecs:RegisterContainerInstance"
+#                  - "ecs:StartTelemetrySession"
+#                  - "ecs:Submit*"
+#                Resource: "*"
+#        - PolicyName: "IamRoleInstance-logs"
+#          PolicyDocument:
+#            Version: "2012-10-17"
+#            Statement:
+#              - Effect: "Allow"
+#                Action:
+#                  - "logs:CreateLogStream"
+#                  - "logs:PutLogEvents"
+#                Resource:
+#                  - "arn:aws:logs:*:*:*"
+#        - PolicyName: "IamRoleInstance-ecr"
+#          PolicyDocument:
+#            Version: "2012-10-17"
+#            Statement:
+#              - Effect: "Allow"
+#                Action:
+#                  - "ecr:GetAuthorizationToken"
+#                  - "ecr:BatchCheckLayerAvailability"
+#                  - "ecr:GetDownloadUrlForLayer"
+#                  - "ecr:BatchGetImage"
+#                Resource: "*"
 
-  IamRoleService:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-          - Effect: "Allow"
-            Principal:
-              Service:
-                - "ecs.amazonaws.com"
-            Action:
-              - "sts:AssumeRole"
-      Path: "/"
-      Policies:
-        - PolicyName: "IamRoleService-ecs"
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: "Allow"
-                Action:
-                  - "ec2:AuthorizeSecurityGroupIngress"
-                  - "ec2:Describe*"
-                  - "elasticloadbalancing:DeregisterInstancesFromLoadBalancer"
-                  - "elasticloadbalancing:Describe*"
-                  - "elasticloadbalancing:RegisterInstancesWithLoadBalancer"
-                Resource: "*"
+#  IamRoleService:
+#    Type: AWS::IAM::Role
+#    Properties:
+#      AssumeRolePolicyDocument:
+#        Statement:
+#          - Effect: "Allow"
+#            Principal:
+#              Service:
+#                - "ecs.amazonaws.com"
+#            Action:
+#              - "sts:AssumeRole"
+#      Path: "/"
+#      Policies:
+#        - PolicyName: "IamRoleService-ecs"
+#          PolicyDocument:
+#            Version: "2012-10-17"
+#            Statement:
+#              - Effect: "Allow"
+#                Action:
+#                  - "ec2:AuthorizeSecurityGroupIngress"
+#                  - "ec2:Describe*"
+#                  - "elasticloadbalancing:DeregisterInstancesFromLoadBalancer"
+#                  - "elasticloadbalancing:Describe*"
+#                  - "elasticloadbalancing:RegisterInstancesWithLoadBalancer"
+#                Resource: "*"
 
   LaunchConfiguration:
     Type: AWS::AutoScaling::LaunchConfiguration
@@ -220,20 +220,20 @@ Resources:
               - Ref: AWS::Region
               - "\n"
 
-  LoadBalancer:
-    Type: AWS::ElasticLoadBalancing::LoadBalancer
-    Properties:
-      CrossZone: true
-      Listeners:
-        - InstancePort: '80'
-          InstanceProtocol: 'HTTP'
-          LoadBalancerPort: '80'
-          Protocol: 'HTTP'
-      SecurityGroups:
-        - Ref: SecurityGroupLoadBalancer
-      Subnets:
-        - Fn::ImportValue: cf-subnet-public-1-subnet::id
-        - Fn::ImportValue: cf-subnet-public-2-subnet::id
+#  LoadBalancer:
+#    Type: AWS::ElasticLoadBalancing::LoadBalancer
+#    Properties:
+#      CrossZone: true
+#      Listeners:
+#        - InstancePort: '80'
+#          InstanceProtocol: 'HTTP'
+#          LoadBalancerPort: '80'
+#          Protocol: 'HTTP'
+#      SecurityGroups:
+#        - Ref: SecurityGroupLoadBalancer
+#      Subnets:
+#        - Fn::ImportValue: cf-subnet-public-1-subnet::id
+#        - Fn::ImportValue: cf-subnet-public-2-subnet::id
 
 #  SecurityGroupInstance:
 #    Type: AWS::EC2::SecurityGroup

@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Role"
+
+Resources:
+  Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "ecs.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      Policies:
+{% for policy in item.policies %}
+        - PolicyName: "{{ policy.policy_name }}"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+{% for action in policy.actions %}
+                  - "{{ action }}"
+{% endfor %}
+                Resource: "{{ policy.resource }}"
+{% endfor %}
+
+Outputs:
+  RoleId:
+    Description: "Role Id"
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-role::id
+    Value: { Ref: Role }

@@ -1,0 +1,14 @@
+- name: cloudformation - iam - role - render template
+  template:
+    src=roles/common/iam/role/templates/role.yml.j2
+    dest=roles/common/iam/role/templates-generated/role-{{item.stack_name}}.yml
+  with_items: "{{ role_items }}"
+
+- name: cloudformation - iam - role
+  cloudformation:
+    stack_name: "{{ item.stack_name }}"
+    state: "present"
+    region: "{{ region }}"
+    disable_rollback: true
+    template: roles/common/iam/role/templates-generated/role-{{item.stack_name}}.yml
+  with_items: "{{ role_items }}"

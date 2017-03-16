@@ -98,4 +98,39 @@ security_group_ec2_instance:
     to_port: 80
     vpc_stack_name: "{{ vpc.stack_name }}"
 
+role_ecs_service:
+  - stack_name: cf-role-ecs-service
+    policies:
+      - policy_name: "RoleEcsService"
+        actions:
+          - "ec2:AuthorizeSecurityGroupIngress"
+          - "ec2:Describe*"
+          - "elasticloadbalancing:DeregisterInstancesFromLoadBalancer"
+          - "elasticloadbalancing:Describe*"
+          - "elasticloadbalancing:RegisterInstancesWithLoadBalancer"
+        resource: "*"
 
+role_launch_configuration_instance_profile:
+  - stack_name: cf-role-launch-configuration-instance-profile
+    policies:
+      - policy_name: "RoleLaunchConfigurationEcs"
+        actions:
+          - "ecs:DeregisterContainerInstance"
+          - "ecs:DiscoverPollEndpoint"
+          - "ecs:Poll"
+          - "ecs:RegisterContainerInstance"
+          - "ecs:StartTelemetrySession"
+          - "ecs:Submit*"
+        resource: "*"
+      - policy_name: "RoleLaunchConfigurationLogs"
+        actions:
+          - "logs:CreateLogStream"
+          - "logs:PutLogEvents"
+        resource: "arn:aws:logs:*:*:*"
+      - policy_name: "RoleLaunchConfigurationEcr"
+        actions:
+          - "ecr:GetAuthorizationToken"
+          - "ecr:BatchCheckLayerAvailability"
+          - "ecr:GetDownloadUrlForLayer"
+          - "ecr:BatchGetImage"
+        resource: "*"
