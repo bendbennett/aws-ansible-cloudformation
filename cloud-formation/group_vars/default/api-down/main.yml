@@ -1,0 +1,14 @@
+
+down:
+  - "{{ security_group_ec2_instance[0].stack_name }}"
+  - "{{ load_balancer[0].stack_name }}"
+  - "{{ security_group_load_balancer[0].stack_name }}"
+  - "{{ subnet_private[1].stack_name }}"
+  - "{{ subnet_private[0].stack_name }}"
+  - "{{ route_table_private[1].stack_name }}"
+  - "{{ route_table_private[0].stack_name }}"
+  - "{{ subnet_public[1].stack_name }}"
+  - "{{ subnet_public[0].stack_name }}"
+  - "{{ route_table_public[0].stack_name }}"
+  - "{{ network_acl.stack_name }}"
+  - "{{ vpc.stack_name }}"

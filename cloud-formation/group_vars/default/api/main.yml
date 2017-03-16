@@ -75,6 +75,20 @@ security_group_load_balancer:
     to_port: 80
     vpc_stack_name: "{{ vpc.stack_name }}"
 
+load_balancer:
+  - stack_name: cf-load-balancer
+    cross_zone: true
+    listeners:
+      - instance_port: 80
+        instance_protocol: "HTTP"
+        load_balancer_port: 80
+        protocol: "HTTP"
+    security_group_stack_names:
+      - "{{ security_group_load_balancer[0].stack_name }}"
+    subnet_stack_names:
+      - "{{ subnet_public[0].stack_name }}"
+      - "{{ subnet_public[1].stack_name }}"
+
 security_group_ec2_instance:
   - stack_name: cf-security-group-ec2-instance
     from_port: 80
@@ -84,15 +98,4 @@ security_group_ec2_instance:
     to_port: 80
     vpc_stack_name: "{{ vpc.stack_name }}"
 
-down:
-  - "{{ security_group_ec2_instance[0].stack_name }}"
-  - "{{ security_group_load_balancer[0].stack_name }}"
-  - "{{ subnet_private[1].stack_name }}"
-  - "{{ subnet_private[0].stack_name }}"
-  - "{{ route_table_private[1].stack_name }}"
-  - "{{ route_table_private[0].stack_name }}"
-  - "{{ subnet_public[1].stack_name }}"
-  - "{{ subnet_public[0].stack_name }}"
-  - "{{ route_table_public[0].stack_name }}"
-  - "{{ network_acl.stack_name }}"
-  - "{{ vpc.stack_name }}"
+
