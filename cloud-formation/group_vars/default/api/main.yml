@@ -154,13 +154,13 @@ launch_configuration:
     security_group_stack_names:
       - "{{ security_group_ec2_instance[0].stack_name }}"
 
-#auto_scaling_group:
-#  - stack_name: cf-auto-scaling-group
-#    desired_capacity: 2
-#    health_check_type: "EC2"
-#    launch_configuration_stack_name: "{{ launch_configuration[0].stack_name }}"
-#    max_size: 2
-#    min_size: 1
-#    subnet_stack_names:
-#      - "{{ subnet_private[0].stack_name }}"
-#      - "{{ subnet_private[1].stack_name }}"
+auto_scaling_group:
+  - stack_name: cf-auto-scaling-group
+    desired_capacity: 2
+    health_check_type: "EC2"
+    launch_configuration_stack_name: "{{ launch_configuration[0].stack_name }}"
+    max_size: 2
+    min_size: 1
+    subnet_stack_names:
+      - "{{ subnet_private[0].stack_name }}"
+      - "{{ subnet_private[1].stack_name }}"

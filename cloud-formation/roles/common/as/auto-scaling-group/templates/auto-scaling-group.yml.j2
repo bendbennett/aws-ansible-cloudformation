@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "AutoScaling Group"
+
+Resources:
+  AutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      DesiredCapacity: {{ item.desired_capacity }}
+      HealthCheckType: {{ item.health_check_type }}
+      LaunchConfigurationName:
+        Fn::ImportValue: {{ item.launch_configuration_stack_name }}-launch::configuration::id
+      MaxSize: {{ item.max_size }}
+      MinSize: {{ item.min_size }}
+      VPCZoneIdentifier:
+{% for subnet_stack_name in item.subnet_stack_names %}
+        - Fn::ImportValue: {{ subnet_stack_name }}-subnet::id
+{% endfor %}
+
+Outputs:
+  AutoScalingGroupId:
+    Description: "AutoScaling Group Id"
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-auto::scaling::group::id
+    Value: { Ref: AutoScalingGroup }

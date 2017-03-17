@@ -1,0 +1,14 @@
+- name: cloudformation - as - auto-scaling-group - render template
+  template:
+    src=roles/common/as/auto-scaling-group/templates/auto-scaling-group.yml.j2
+    dest=roles/common/as/auto-scaling-group/templates-generated/auto-scaling-group-{{item.stack_name}}.yml
+  with_items: "{{ auto_scaling_group_items }}"
+
+- name: cloudformation - as - auto-scaling-group
+  cloudformation:
+    stack_name: "{{ item.stack_name }}"
+    state: "present"
+    region: "{{ region }}"
+    disable_rollback: true
+    template: roles/common/as/auto-scaling-group/templates-generated/auto-scaling-group-{{item.stack_name}}.yml
+  with_items: "{{ auto_scaling_group_items }}"
