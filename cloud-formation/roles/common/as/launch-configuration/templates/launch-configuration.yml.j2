@@ -1,0 +1,93 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Launch Configuration"
+
+Resources:
+  LaunchConfiguration:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          commands:
+            01_add_instance_to_cluster:
+              command:
+                Fn::Join:
+                  - ""
+                  - - "#!/bin/bash\n"
+                    - "echo ECS_CLUSTER="
+                    - Fn::ImportValue: {{ item.cluster }}-cluster::id
+                    - " >> /etc/ecs/ecs.config\n"
+                    - "echo ECS_AVAILABLE_LOGGING_DRIVERS=[\\\"json-file\\\",\\\"awslogs\\\"] >> /etc/ecs/ecs.config"
+                    - "echo '*/10 * * * * root docker rm -v $(docker ps -a -q) >> /var/log/messages 2>&1' >> /etc/cron.d/docker"
+              files:
+                /etc/cfn/cfn-hup.conf:
+                  content:
+                    Fn::Join:
+                      - ""
+                      - - "[main]\n"
+                        - "stack="
+                        - Ref: AWS::StackId
+                        - "\n"
+                        - "region="
+                        - Ref: AWS::Region
+                        - "\n"
+                  mode: 000400
+                  owner: root
+                  group: root
+                /etc/cfn/hooks.d/cfn-auto-reloader.conf:
+                  content:
+                    Fn::Join:
+                      - ""
+                      - - "[cfn-auto-reloader-hook]\n"
+                        - "triggers=post.update\n"
+                        - "path=Resources.LaunchConfiguration.Metadata.AWS::CloudFormation::Init\n"
+                        - "action=/opt/aws/bin/cfn-init -v --stack "
+                        - Ref: AWS::StackName
+                        - " --resource LaunchConfiguration --region "
+                        - Ref: AWS::Region
+                        - "\n"
+                        - "runas=root\n"
+                  services:
+                    sysvinit:
+                      cfn-hup:
+                        enabled: true
+                        ensureRunning: true
+                        files:
+                          - "/etc/cfn/cfn-hup.conf"
+                          - "/etc/cfn/hooks.d/cfn-auto-reloader.conf"
+    Properties:
+      AssociatePublicIpAddress: {{ item.associate_public_ip_address }}
+      IamInstanceProfile:
+        Fn::ImportValue: {{ item.iam_instance_profile_stack_name }}-instance::profile::id
+      ImageId: {{ item.image_id }}
+      InstanceType: {{ item.instance_type }}
+      KeyName: {{ item.key_name }}
+      SecurityGroups:
+{% for security_group_stack_name in item.security_group_stack_names %}
+        - Fn::ImportValue: {{ security_group_stack_name }}-security::group::id
+{% endfor %}
+      UserData:
+        Fn::Base64:
+          Fn::Join:
+            - ""
+            - - "#!/bin/bash -xe\n"
+              - "yum update -y ecs-init\n"
+              - "yum install -y aws-cfn-bootstrap\n"
+              - "/opt/aws/bin/cfn-init -v --stack "
+              - Ref: AWS::StackName
+              - " --resource LaunchConfiguration --region "
+              - Ref: AWS::Region
+              - "\n"
+              - "/opt/aws/bin/cfn-signal -e $? --stack "
+              - Ref: AWS::StackName
+              - " --resource AutoScalingGroup --region "
+              - Ref: AWS::Region
+              - "\n"
+
+Outputs:
+  LaunchConfigurationId:
+    Description: "Launch Configuration Id"
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-launch::configuration::id
+    Value: { Ref: LaunchConfiguration }

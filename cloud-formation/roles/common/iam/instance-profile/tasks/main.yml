@@ -1,0 +1,14 @@
+- name: cloudformation - iam - instance-profile - render template
+  template:
+    src=roles/common/iam/instance-profile/templates/instance-profile.yml.j2
+    dest=roles/common/iam/instance-profile/templates-generated/instance-profile-{{item.stack_name}}.yml
+  with_items: "{{ instance_profile_items }}"
+
+- name: cloudformation - iam - instance-profile
+  cloudformation:
+    stack_name: "{{ item.stack_name }}"
+    state: "present"
+    region: "{{ region }}"
+    disable_rollback: true
+    template: roles/common/iam/instance-profile/templates-generated/instance-profile-{{item.stack_name}}.yml
+  with_items: "{{ instance_profile_items }}"

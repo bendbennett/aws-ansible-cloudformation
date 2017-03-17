@@ -1,0 +1,7 @@
+- name: cloudformation - common - ecs - cluster
+  cloudformation:
+    stack_name: "{{ cluster.stack_name }}"
+    state: "present"
+    region: "{{ region }}"
+    disable_rollback: true
+    template: roles/common/ecs/cluster/templates/cluster.yml

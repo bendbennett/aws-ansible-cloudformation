@@ -110,8 +110,8 @@ role_ecs_service:
           - "elasticloadbalancing:RegisterInstancesWithLoadBalancer"
         resource: "*"
 
-role_launch_configuration_instance_profile:
-  - stack_name: cf-role-launch-configuration-instance-profile
+role_launch_configuration:
+  - stack_name: cf-role-launch-configuration
     policies:
       - policy_name: "RoleLaunchConfigurationEcs"
         actions:
@@ -134,3 +134,33 @@ role_launch_configuration_instance_profile:
           - "ecr:GetDownloadUrlForLayer"
           - "ecr:BatchGetImage"
         resource: "*"
+
+instance_profile:
+  - stack_name: cf-instance-profile
+    role_stack_names:
+      - "{{ role_launch_configuration[0].stack_name }}"
+
+cluster:
+  stack_name: cf-cluster
+
+launch_configuration:
+  - stack_name: cf-launch-configuration
+    associate_public_ip_address: false
+    cluster: "{{ cluster.stack_name }}"
+    iam_instance_profile_stack_name: "{{ instance_profile[0].stack_name }}"
+    image_id: "ami-3fb6bc5b"
+    instance_type: "t2.micro"
+    key_name: "synaptology-administrator"
+    security_group_stack_names:
+      - "{{ security_group_ec2_instance[0].stack_name }}"
+
+#auto_scaling_group:
+#  - stack_name: cf-auto-scaling-group
+#    desired_capacity: 2
+#    health_check_type: "EC2"
+#    launch_configuration_stack_name: "{{ launch_configuration[0].stack_name }}"
+#    max_size: 2
+#    min_size: 1
+#    subnet_stack_names:
+#      - "{{ subnet_private[0].stack_name }}"
+#      - "{{ subnet_private[1].stack_name }}"
