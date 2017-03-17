@@ -2,4 +2,15 @@
   connection: local
   gather_facts: false
   roles:
-    - api
+    - common/ec2/vpc
+    - common/ec2/network-acl
+    - { role: common/ec2/route-table, route_table_items: "{{ route_table_public }}" }
+    - { role: common/ec2/subnet, subnet_items: "{{ subnet_public }}" }
+    - { role: common/ec2/route-table, route_table_items: "{{ route_table_private }}" }
+    - { role: common/ec2/subnet, subnet_items: "{{ subnet_private }}" }
+    - { role: common/ec2/security-group, security_group_items: "{{ security_group_load_balancer }}" }
+    - { role: common/elb/load-balancer, load_balancer_items: "{{ load_balancer }}" }
+    - { role: common/ec2/security-group, security_group_items: "{{ security_group_ec2_instance }}" }
+    - { role: common/iam/role, role_items: "{{ role_ecs_service }}" }
+    - { role: common/iam/role, role_items: "{{ role_launch_configuration_instance_profile }}" }
+    - { role: common/as/auto-scaling-group, auto_scaling_group_items: "{{ auto_scaling_group }}" }

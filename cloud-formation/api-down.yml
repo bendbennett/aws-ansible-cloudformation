@@ -2,4 +2,4 @@
   connection: local
   gather_facts: false
   roles:
-    - api-down
+    - common/down
