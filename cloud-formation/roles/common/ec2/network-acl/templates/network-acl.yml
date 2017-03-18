@@ -1,0 +1,71 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Network Acl"
+
+Parameters:
+  CidrBlockEgress:
+    Type: String
+
+  CidrBlockIngress:
+    Type: String
+
+  ProtocolEgress:
+    Type: String
+
+  ProtocolIngress:
+    Type: String
+
+  RuleActionEgress:
+    Type: String
+
+  RuleActionIngress:
+    Type: String
+
+  RuleNumberEgress:
+    Type: String
+
+  RuleNumberIngress:
+    Type: String
+
+  VpcStackName:
+    Type: String
+
+Resources:
+  NetworkAcl:
+    Type: AWS::EC2::NetworkAcl
+    Properties:
+      VpcId:
+        Fn::ImportValue:
+          Fn::Sub: ${VpcStackName}-vpc::id
+      Tags:
+        - Key: "Name"
+          Value:
+            Fn::Sub: ${AWS::StackName}
+
+  NetworkAclEntryEgress:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      CidrBlock: { Ref: CidrBlockEgress }
+      Egress: true
+      NetworkAclId: { Ref: NetworkAcl }
+      Protocol: { Ref: ProtocolEgress }
+      RuleAction: { Ref: RuleActionEgress }
+      RuleNumber: { Ref: RuleNumberEgress }
+
+  NetworkAclEntryIngress:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      CidrBlock: { Ref: CidrBlockIngress }
+      Egress: false
+      NetworkAclId: { Ref: NetworkAcl }
+      Protocol: { Ref: ProtocolIngress }
+      RuleAction: { Ref: RuleActionIngress }
+      RuleNumber: { Ref: RuleNumberIngress }
+
+Outputs:
+  NetworkAclId:
+    Description: "Network Acl Id"
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-network::acl::id
+    Value: { Ref: "NetworkAcl" }

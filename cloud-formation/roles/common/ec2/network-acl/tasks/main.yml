@@ -1,0 +1,17 @@
+- name: cloudformation - ec2 - network-acl
+  cloudformation:
+    stack_name: "{{ network_acl.stack_name }}"
+    state: "present"
+    region: "{{ region }}"
+    disable_rollback: true
+    template: roles/common/ec2/network-acl/templates/network-acl.yml
+    template_parameters:
+      CidrBlockEgress: "{{ network_acl.cidr_block_egress }}"
+      CidrBlockIngress: "{{ network_acl.cidr_block_ingress }}"
+      ProtocolEgress: "{{ network_acl.protocol_egress }}"
+      ProtocolIngress: "{{ network_acl.protocol_ingress }}"
+      RuleActionEgress: "{{ network_acl.rule_action_egress }}"
+      RuleActionIngress: "{{ network_acl.rule_action_ingress }}"
+      RuleNumberEgress: "{{ network_acl.rule_number_egress }}"
+      RuleNumberIngress: "{{ network_acl.rule_number_ingress }}"
+      VpcStackName: "{{ network_acl.vpc_stack_name }}"

@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Service"
+
+Parameters:
+  ClusterStackName:
+    Type: String
+
+  DesiredCount:
+    Type: Number
+
+  LoadBalancerName:
+    Type: String
+
+  RoleEcsServiceStackName:
+    Type: String
+
+  TaskDefinitionStackName:
+    Type: String
+
+Resources:
+  Service:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster:
+        Fn::ImportValue:
+          Fn::Sub: ${ClusterStackName}-cluster::id
+      DesiredCount: { Ref: DesiredCount }
+      LoadBalancers:
+        - ContainerName: "nginx"
+          ContainerPort: 80
+          LoadBalancerName: { Ref: LoadBalancerName }
+      Role:
+        Fn::ImportValue:
+          Fn::Sub: ${RoleEcsServiceStackName}-role::id
+      TaskDefinition:
+        Fn::ImportValue:
+          Fn::Sub: ${TaskDefinitionStackName}-task::definition::id
+
+Outputs:
+  ServiceId:
+    Description: "Service Id"
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-service::id
+    Value: { Ref: Service }

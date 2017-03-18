@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Load Balancer"
+
+Resources:
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
+    Properties:
+      CrossZone: {{ item.cross_zone }}
+      Listeners:
+{% for listener in item.listeners %}
+        - InstancePort: {{ listener.instance_port }}
+          InstanceProtocol: {{ listener.instance_protocol }}
+          LoadBalancerPort: {{ listener.load_balancer_port }}
+          Protocol: {{ listener.protocol }}
+{% endfor %}
+      LoadBalancerName: {{ item.name }}
+      SecurityGroups:
+{% for security_group_stack_name in item.security_group_stack_names %}
+        - Fn::ImportValue: {{ security_group_stack_name }}-security::group::id
+{% endfor %}
+      Subnets:
+{% for subnet_stack_name in item.subnet_stack_names %}
+        - Fn::ImportValue: {{ subnet_stack_name }}-subnet::id
+{% endfor %}
+
+Outputs:
+  LoadBalancerId:
+    Description: "Load Balancer Id"
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-load::balancer::id
+    Value: { Ref: LoadBalancer }

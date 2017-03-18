@@ -1,0 +1,5 @@
+- hosts: default
+  connection: local
+  gather_facts: false
+  roles:
+    - { role: common/down, down_items: "{{ basic_network_down }}" }

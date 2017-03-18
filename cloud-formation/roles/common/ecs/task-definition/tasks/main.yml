@@ -1,0 +1,8 @@
+- name: cloudformation - ecs - task-definition
+  cloudformation:
+    stack_name: "{{ item.stack_name }}"
+    state: "present"
+    region: "{{ region }}"
+    disable_rollback: true
+    template: roles/common/ecs/task-definition/templates/task-definition.yml
+  with_items: "{{ task_definition_items }}"

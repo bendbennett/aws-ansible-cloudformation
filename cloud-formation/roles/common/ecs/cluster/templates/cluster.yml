@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Cluster"
+
+Parameters:
+  ClusterName:
+    Type: String
+
+Resources:
+  Cluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: { Ref: ClusterName }
+
+Outputs:
+  ClusterId:
+    Description: "Cluster Id"
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-cluster::id
+    Value: { Ref: Cluster }

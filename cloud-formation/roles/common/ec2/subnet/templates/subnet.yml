@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Subnet"
+
+Parameters:
+  AvailabilityZone:
+    Type: String
+
+  CidrBlock:
+    Type: String
+
+  NetworkAclStackName:
+    Type: String
+
+  RouteTableStackName:
+    Type: String
+
+  VpcStackName:
+    Type: String
+
+Resources:
+  Subnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: { Ref: AvailabilityZone }
+      CidrBlock: { Ref: CidrBlock }
+      VpcId:
+        Fn::ImportValue:
+          Fn::Sub: ${VpcStackName}-vpc::id
+      Tags:
+        - Key: "Name"
+          Value:
+            Fn::Sub: ${AWS::StackName}
+
+  SubnetNetworkAclAssociation:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      NetworkAclId:
+        Fn::ImportValue:
+          Fn::Sub: ${NetworkAclStackName}-network::acl::id
+      SubnetId: { Ref: Subnet }
+
+  SubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Fn::ImportValue:
+          Fn::Sub: ${RouteTableStackName}-route::table::id
+      SubnetId: { Ref: Subnet }
+
+Outputs:
+  SubnetId:
+    Description: "Subnet Id"
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-subnet::id
+    Value: { Ref: Subnet }

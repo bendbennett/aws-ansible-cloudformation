@@ -1,0 +1,121 @@
+security_group_load_balancer:
+  - stack_name: cf-security-group-load-balancer
+    cidr_ip: 0.0.0.0/0
+    from_port: 80
+    ip_protocol: tcp
+    security_group_type: "cidr_ip"
+    to_port: 80
+    vpc_stack_name: "{{ vpc.stack_name }}"
+
+load_balancer:
+  - stack_name: cf-load-balancer
+    cross_zone: true
+    listeners:
+      - instance_port: 80
+        instance_protocol: "HTTP"
+        load_balancer_port: 80
+        protocol: "HTTP"
+    name: "load-balancer-site"
+    security_group_stack_names:
+      - "{{ security_group_load_balancer[0].stack_name }}"
+    subnet_stack_names:
+      - "{{ subnet_public[0].stack_name }}"
+      - "{{ subnet_public[1].stack_name }}"
+
+security_group_ec2_instance:
+  - stack_name: cf-security-group-ec2-instance
+    from_port: 80
+    ip_protocol: tcp
+    security_group_stack_name: "{{ security_group_load_balancer[0].stack_name }}"
+    security_group_type: "source_security_group_id"
+    to_port: 80
+    vpc_stack_name: "{{ vpc.stack_name }}"
+
+role_launch_configuration:
+  - stack_name: cf-role-launch-configuration
+    service: "ec2.amazonaws.com"
+    policies:
+      - policy_name: "RoleLaunchConfigurationEcs"
+        actions:
+          - "ecs:DeregisterContainerInstance"
+          - "ecs:DiscoverPollEndpoint"
+          - "ecs:Poll"
+          - "ecs:RegisterContainerInstance"
+          - "ecs:StartTelemetrySession"
+          - "ecs:Submit*"
+        resource: "*"
+      - policy_name: "RoleLaunchConfigurationLogs"
+        actions:
+          - "logs:CreateLogStream"
+          - "logs:PutLogEvents"
+        resource: "arn:aws:logs:*:*:*"
+      - policy_name: "RoleLaunchConfigurationEcr"
+        actions:
+          - "ecr:GetAuthorizationToken"
+          - "ecr:BatchCheckLayerAvailability"
+          - "ecr:GetDownloadUrlForLayer"
+          - "ecr:BatchGetImage"
+        resource: "*"
+
+instance_profile_launch_configuration:
+  - stack_name: cf-instance-profile-launch-configuration
+    role_stack_names:
+      - "{{ role_launch_configuration[0].stack_name }}"
+
+cluster_launch_configuration:
+  - stack_name: cf-cluster
+    cluster_name: "cluster-site"
+
+launch_configuration_auto_scaling_group:
+  - stack_name: cf-launch-configuration-auto-scaling-group
+    lc_associate_public_ip_address: false
+    lc_cluster_stack_name: "{{ cluster_launch_configuration[0].stack_name }}"
+    lc_iam_instance_profile_stack_name: "{{ instance_profile_launch_configuration[0].stack_name }}"
+    lc_image_id: "ami-3fb6bc5b"
+    lc_instance_type: "t2.micro"
+    lc_key_name: "synaptology-administrator"
+    lc_security_group_stack_names:
+      - "{{ security_group_ec2_instance[0].stack_name }}"
+    asg_desired_capacity: 2
+    asg_health_check_type: "EC2"
+    asg_max_size: 2
+    asg_min_size: 1
+    asg_vpc_zone_identifiers:
+      - "{{ subnet_private[0].stack_name }}"
+      - "{{ subnet_private[1].stack_name }}"
+
+task_definition:
+  - stack_name: cf-task-definition
+
+role_ecs_service:
+  - stack_name: cf-role-ecs-service
+    service: "ecs.amazonaws.com"
+    policies:
+      - policy_name: "RoleEcsService"
+        actions:
+          - "ec2:AuthorizeSecurityGroupIngress"
+          - "ec2:Describe*"
+          - "elasticloadbalancing:DeregisterInstancesFromLoadBalancer"
+          - "elasticloadbalancing:Describe*"
+          - "elasticloadbalancing:RegisterInstancesWithLoadBalancer"
+        resource: "*"
+
+service:
+  - stack_name: cf-service
+    cluster_stack_name: "{{ cluster_launch_configuration[0].stack_name }}"
+    desired_count: 2
+    load_balancer_name: "{{ load_balancer[0].name }}"
+    role_ecs_service_stack_name: "{{ role_ecs_service[0].stack_name }}"
+    task_definition_stack_name: "{{ task_definition[0].stack_name }}"
+
+site_down:
+  - "{{ service[0].stack_name }}"
+  - "{{ role_ecs_service[0].stack_name }}"
+  - "{{ task_definition[0].stack_name }}"
+  - "{{ launch_configuration_auto_scaling_group[0].stack_name }}"
+  - "{{ cluster_launch_configuration[0].stack_name }}"
+  - "{{ instance_profile_launch_configuration[0].stack_name }}"
+  - "{{ role_launch_configuration[0].stack_name }}"
+  - "{{ security_group_ec2_instance[0].stack_name }}"
+  - "{{ load_balancer[0].stack_name }}"
+  - "{{ security_group_load_balancer[0].stack_name }}"

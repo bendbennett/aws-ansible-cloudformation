@@ -1,0 +1,12 @@
+- name: cloudformation - vpc
+  cloudformation:
+    stack_name: "{{ vpc.stack_name }}"
+    state: "present"
+    region: "{{ region }}"
+    disable_rollback: true
+    template: roles/common/ec2/vpc/templates/vpc.yml
+    template_parameters:
+      CidrBlock: "{{ vpc.cidr_block }}"
+      EnableDnsHostnames: "{{ vpc.enable_dns_hostnames }}"
+      EnableDnsSupport: "{{ vpc.enable_dns_support }}"
+      InstanceTenancy: "{{ vpc.instance_tenancy }}"

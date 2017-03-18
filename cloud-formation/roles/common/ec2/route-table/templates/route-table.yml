@@ -1,0 +1,84 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Route Table"
+
+Parameters:
+  DestinationCidrBlock:
+    Type: String
+
+  GatewayType:
+    Type: String
+
+  SubnetPublicStackName:
+    Type: String
+    Default: ""
+
+  VpcStackName:
+    Type: String
+
+Conditions:
+  IsInternetGateway:
+    Fn::Equals:
+      - Ref: GatewayType
+      - "internet"
+
+  IsNatGateway:
+    Fn::Equals:
+      - Ref: GatewayType
+      - "nat"
+
+Resources:
+  ElasticIP:
+    Type: AWS::EC2::EIP
+    Condition: IsNatGateway
+    Properties:
+      Domain: "vpc"
+
+  NatGateway:
+    Type: AWS::EC2::NatGateway
+    Condition: IsNatGateway
+    Properties:
+      AllocationId:
+        Fn::GetAtt:
+          - "ElasticIP"
+          - "AllocationId"
+      SubnetId:
+        Fn::ImportValue:
+          Fn::Sub: ${SubnetPublicStackName}-subnet::id
+
+  RouteInternetGateway:
+    Type: AWS::EC2::Route
+    Condition: IsInternetGateway
+    Properties:
+      DestinationCidrBlock: { Ref: DestinationCidrBlock }
+      GatewayId:
+        Fn::ImportValue:
+          Fn::Sub: ${VpcStackName}-internet::gateway::id
+      RouteTableId: { Ref: RouteTable }
+
+  RouteNatGateway:
+    Type: AWS::EC2::Route
+    Condition: IsNatGateway
+    Properties:
+      DestinationCidrBlock: { Ref: DestinationCidrBlock }
+      NatGatewayId: { Ref: NatGateway}
+      RouteTableId: { Ref: RouteTable }
+
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Fn::ImportValue:
+          Fn::Sub: ${VpcStackName}-vpc::id
+      Tags:
+        - Key: "Name"
+          Value:
+            Fn::Sub: ${AWS::StackName}
+
+Outputs:
+  RouteTableId:
+    Description: "Route Table Id"
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-route::table::id
+    Value: { Ref: RouteTable }

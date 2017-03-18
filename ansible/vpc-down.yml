@@ -1,5 +1,0 @@
-- hosts: default
-  connection: local
-  gather_facts: false
-  roles:
-    - vpc-down

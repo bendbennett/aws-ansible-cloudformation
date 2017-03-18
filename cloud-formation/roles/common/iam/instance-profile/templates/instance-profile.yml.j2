@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Instance Profile"
+
+Resources:
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: "/"
+      Roles:
+{% for role_stack_name in item.role_stack_names %}
+        - Fn::ImportValue: {{ role_stack_name }}-role::id
+{% endfor %}
+
+Outputs:
+  InstanceProfileId:
+    Description: "Instance Profile Id"
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-instance::profile::id
+    Value: { Ref: InstanceProfile }

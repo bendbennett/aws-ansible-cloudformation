@@ -1,0 +1,14 @@
+- name: cloudformation - elb - load-balancer - render template
+  template:
+    src=roles/common/elb/load-balancer/templates/load-balancer.yml.j2
+    dest=roles/common/elb/load-balancer/templates-generated/load-balancer-{{item.stack_name}}.yml
+  with_items: "{{ load_balancer_items }}"
+
+- name: cloudformation - elb - load-balancer
+  cloudformation:
+    stack_name: "{{ item.stack_name }}"
+    state: "present"
+    region: "{{ region }}"
+    disable_rollback: true
+    template: roles/common/elb/load-balancer/templates-generated/load-balancer-{{item.stack_name}}.yml
+  with_items: "{{ load_balancer_items }}"

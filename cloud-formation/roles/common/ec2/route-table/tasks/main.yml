@@ -1,0 +1,13 @@
+- name: cloudformation - ec2 - route-table
+  cloudformation:
+    stack_name: "{{ item.stack_name }}"
+    state: "present"
+    region: "{{ region }}"
+    disable_rollback: true
+    template: roles/common/ec2/route-table/templates/route-table.yml
+    template_parameters:
+      DestinationCidrBlock: "{{ item.destination_cidr_block }}"
+      GatewayType: "{{ item.gateway_type }}"
+      SubnetPublicStackName: "{{ item.subnet_public_stack_name | default('') }}"
+      VpcStackName: "{{ item.vpc_stack_name }}"
+  with_items: "{{ route_table_items }}"

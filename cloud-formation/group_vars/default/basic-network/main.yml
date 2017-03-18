@@ -1,0 +1,75 @@
+vpc:
+  stack_name: cf-vpc
+  cidr_block: 10.0.0.0/16
+  enable_dns_hostnames: true
+  enable_dns_support: true
+  instance_tenancy: default
+
+network_acl:
+  stack_name: cf-network-acl
+  cidr_block_egress: 0.0.0.0/0
+  cidr_block_ingress: 0.0.0.0/0
+  protocol_egress: -1
+  protocol_ingress: -1
+  rule_action_egress: allow
+  rule_action_ingress: allow
+  rule_number_egress: 100
+  rule_number_ingress: 100
+  vpc_stack_name: "{{ vpc.stack_name }}"
+
+route_table_public:
+  - stack_name: cf-route-table-public-1
+    destination_cidr_block: 0.0.0.0/0
+    gateway_type: "internet"
+    vpc_stack_name: "{{ vpc.stack_name }}"
+
+subnet_public:
+  - stack_name: cf-subnet-public-1
+    availability_zone: eu-west-2a
+    cidr_block: 10.0.0.0/24
+    network_acl_stack_name: "{{ network_acl.stack_name }}"
+    route_table_stack_name: "{{ route_table_public[0].stack_name }}"
+    vpc_stack_name: "{{ vpc.stack_name }}"
+  - stack_name: cf-subnet-public-2
+    availability_zone: eu-west-2b
+    cidr_block: 10.0.1.0/24
+    network_acl_stack_name: "{{ network_acl.stack_name }}"
+    route_table_stack_name: "{{ route_table_public[0].stack_name }}"
+    vpc_stack_name: "{{ vpc.stack_name }}"
+
+route_table_private:
+  - stack_name: cf-route-table-private-1
+    destination_cidr_block: 0.0.0.0/0
+    gateway_type: "nat"
+    subnet_public_stack_name: "{{ subnet_public[0].stack_name }}"
+    vpc_stack_name: "{{ vpc.stack_name }}"
+  - stack_name: cf-route-table-private-2
+    destination_cidr_block: 0.0.0.0/0
+    gateway_type: "nat"
+    subnet_public_stack_name: "{{ subnet_public[1].stack_name }}"
+    vpc_stack_name: "{{ vpc.stack_name }}"
+
+subnet_private:
+  - stack_name: cf-subnet-private-1
+    availability_zone: eu-west-2a
+    cidr_block: 10.0.128.0/24
+    network_acl_stack_name: "{{ network_acl.stack_name }}"
+    route_table_stack_name: "{{ route_table_private[0].stack_name }}"
+    vpc_stack_name: "{{ vpc.stack_name }}"
+  - stack_name: cf-subnet-private-2
+    availability_zone: eu-west-2b
+    cidr_block: 10.0.129.0/24
+    network_acl_stack_name: "{{ network_acl.stack_name }}"
+    route_table_stack_name: "{{ route_table_private[1].stack_name }}"
+    vpc_stack_name: "{{ vpc.stack_name }}"
+
+basic_network_down:
+  - "{{ subnet_private[1].stack_name }}"
+  - "{{ subnet_private[0].stack_name }}"
+  - "{{ route_table_private[1].stack_name }}"
+  - "{{ route_table_private[0].stack_name }}"
+  - "{{ subnet_public[1].stack_name }}"
+  - "{{ subnet_public[0].stack_name }}"
+  - "{{ route_table_public[0].stack_name }}"
+  - "{{ network_acl.stack_name }}"
+  - "{{ vpc.stack_name }}"
