@@ -71,7 +71,7 @@ launch_configuration_auto_scaling_group:
     lc_associate_public_ip_address: false
     lc_cluster_stack_name: "{{ cluster_launch_configuration[0].stack_name }}"
     lc_iam_instance_profile_stack_name: "{{ instance_profile_launch_configuration[0].stack_name }}"
-    lc_image_id: "ami-3fb6bc5b"
+    lc_image_id: "ami-bf9481db"
     lc_instance_type: "t2.micro"
     lc_key_name: "synaptology-administrator"
     lc_security_group_stack_names:
