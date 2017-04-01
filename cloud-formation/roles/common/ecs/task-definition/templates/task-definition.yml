@@ -9,12 +9,39 @@ Resources:
       ContainerDefinitions:
         - Name: "nginx"
           Essential: true
-          Image: "nginx"
+          Image: "bendbennett/nginx:v0.1.0"
           Memory: 128
-          Cpu: 1024
+          Cpu: 256
+          Links:
+            - php
+          VolumesFrom:
+            - SourceContainer: src
+              ReadOnly: false
           PortMappings:
             - ContainerPort: 80
               HostPort: 80
+        - Name: "php"
+          Essential: true
+          Image: "bendbennett/php7-fpm:v0.3.0"
+          Memory: 256
+          Cpu: 256
+          Links:
+            - mongo
+          VolumesFrom:
+            - SourceContainer: src
+              ReadOnly: false
+        - Name: "mongo"
+          Essential: true
+          Image: "bendbennett/mongo-seeded:v0.1.0"
+          Memory: 256
+          Cpu: 256
+        - Name: "src"
+          Command: [ "ping", "127.0.0.1", "-q" ]
+          Essential: true
+          Image: "bendbennett/symfony2-api-swagger-jwt-src:v0.1.0"
+          Memory: 12
+          Cpu: 128
+
 Outputs:
   TaskDefinitionId:
     Description: "Task Definition Id"
