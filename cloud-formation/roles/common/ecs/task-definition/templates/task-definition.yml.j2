@@ -1,0 +1,72 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Task Definition"
+
+Resources:
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions:
+{% for container_definition in item.container_definitions %}
+        - Name: "{{ container_definition.name }}"
+{% if container_definition.command is defined %}
+          Command:
+{% for cmd in container_definition.command %}
+            - "{{ cmd }}"
+{% endfor %}
+{% endif %}
+          Cpu: {{ container_definition.cpu }}
+{% if container_definition.environment is defined %}
+          Environment:
+{% for env_var in container_definition.environment %}
+            - Name: "{{ env_var.name }}"
+              Value: "{{ env_var.value }}"
+{% endfor %}
+{% endif %}
+          Essential: {{ container_definition.essential }}
+          Image: "{{ container_definition.image }}"
+{% if container_definition.links is defined %}
+          Links:
+{% for link in container_definition.links %}
+            - "{{ link }}"
+{% endfor %}
+{% endif %}
+          Memory: {{ container_definition.memory }}
+{% if container_definition.mount_points is defined %}
+          MountPoints:
+{% for mount_point in container_definition.mount_points %}
+            - ContainerPath: "{{ mount_point.container_path }}"
+              SourceVolume: "{{ mount_point.source_volume }}"
+{% endfor %}
+{% endif %}
+{% if container_definition.port_mappings is defined %}
+          PortMappings:
+{% for port_mapping in container_definition.port_mappings %}
+            - ContainerPort: "{{ port_mapping.container_port }}"
+              HostPort: "{{ port_mapping.host_port }}"
+{% endfor %}
+{% endif %}
+{% if container_definition.volumes_from is defined %}
+          VolumesFrom:
+{% for volume_from in container_definition.volumes_from %}
+            - SourceContainer: "{{ volume_from.source_container }}"
+              ReadOnly: "{{ volume_from.read_only }}"
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% if item.volumes is defined %}
+      Volumes:
+{% for volume in item.volumes %}
+        - Name: "{{ volume.name }}"
+          Host:
+            SourcePath: "{{ volume.host_source_path }}"
+{% endfor %}
+{% endif %}
+
+Outputs:
+  TaskDefinitionId:
+    Description: "Task Definition Id"
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-task::definition::id
+    Value: { Ref: TaskDefinition }

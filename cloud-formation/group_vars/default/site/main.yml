@@ -86,6 +86,41 @@ launch_configuration_auto_scaling_group:
 
 task_definition:
   - stack_name: cf-task-definition
+    container_definitions:
+      - name: "nginx"
+        cpu: 256
+        essential: true
+        image: "bendbennett/nginx:v0.1.0"
+        links:
+          - php
+        memory: 128
+        port_mappings:
+          - container_port: 80
+            host_port: 80
+        volumes_from:
+          - source_container: src
+            read_only: false
+      - name: "php"
+        cpu: 256
+        essential: true
+        image: "bendbennett/php7-fpm:v0.3.0"
+        links:
+          - mongo
+        memory: 256
+        volumes_from:
+          - source_container: src
+            read_only: false
+      - name: "mongo"
+        cpu: 256
+        essential: true
+        image: "bendbennett/mongo-seeded:v0.1.0"
+        memory: 256
+      - name: "src"
+        command: [ "ping", "127.0.0.1", "-q" ]
+        cpu: 128
+        essential: true
+        image: "bendbennett/symfony2-api-swagger-jwt-src:v0.1.0"
+        memory: 12
 
 role_ecs_service:
   - stack_name: cf-role-ecs-service
