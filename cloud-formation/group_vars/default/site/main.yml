@@ -1,5 +1,5 @@
-security_group_load_balancer:
-  - stack_name: cf-security-group-load-balancer
+security_group_load_balancer_web:
+  - stack_name: cf-security-group-load-balancer-web
     cidr_ip: 0.0.0.0/0
     from_port: 80
     ip_protocol: tcp
@@ -7,8 +7,8 @@ security_group_load_balancer:
     to_port: 80
     vpc_stack_name: "{{ vpc.stack_name }}"
 
-load_balancer:
-  - stack_name: cf-load-balancer
+load_balancer_web:
+  - stack_name: cf-load-balancer-web
     cross_zone: true
     listeners:
       - instance_port: 80
@@ -17,16 +17,16 @@ load_balancer:
         protocol: "HTTP"
     name: "load-balancer-site"
     security_group_stack_names:
-      - "{{ security_group_load_balancer[0].stack_name }}"
+      - "{{ security_group_load_balancer_web[0].stack_name }}"
     subnet_stack_names:
       - "{{ subnet_public[0].stack_name }}"
       - "{{ subnet_public[1].stack_name }}"
 
-security_group_ec2_instance:
-  - stack_name: cf-security-group-ec2-instance
+security_group_ec2_instance_web:
+  - stack_name: cf-security-group-ec2-instance-web
     from_port: 80
     ip_protocol: tcp
-    security_group_stack_name: "{{ security_group_load_balancer[0].stack_name }}"
+    security_group_stack_name: "{{ security_group_load_balancer_web[0].stack_name }}"
     security_group_type: "source_security_group_id"
     to_port: 80
     vpc_stack_name: "{{ vpc.stack_name }}"
@@ -62,20 +62,20 @@ instance_profile_launch_configuration:
     role_stack_names:
       - "{{ role_launch_configuration[0].stack_name }}"
 
-cluster_launch_configuration:
-  - stack_name: cf-cluster
+cluster_launch_configuration_web:
+  - stack_name: cf-cluster-web
     cluster_name: "cluster-site"
 
-launch_configuration_auto_scaling_group:
-  - stack_name: cf-launch-configuration-auto-scaling-group
+launch_configuration_auto_scaling_group_web:
+  - stack_name: cf-launch-configuration-auto-scaling-group-web
     lc_associate_public_ip_address: false
-    lc_cluster_stack_name: "{{ cluster_launch_configuration[0].stack_name }}"
+    lc_cluster_stack_name: "{{ cluster_launch_configuration_web[0].stack_name }}"
     lc_iam_instance_profile_stack_name: "{{ instance_profile_launch_configuration[0].stack_name }}"
     lc_image_id: "ami-bf9481db"
     lc_instance_type: "t2.micro"
     lc_key_name: "synaptology-administrator"
     lc_security_group_stack_names:
-      - "{{ security_group_ec2_instance[0].stack_name }}"
+      - "{{ security_group_ec2_instance_web[0].stack_name }}"
     asg_desired_capacity: 2
     asg_health_check_type: "EC2"
     asg_max_size: 2
@@ -84,8 +84,8 @@ launch_configuration_auto_scaling_group:
       - "{{ subnet_private[0].stack_name }}"
       - "{{ subnet_private[1].stack_name }}"
 
-task_definition:
-  - stack_name: cf-task-definition
+task_definition_web:
+  - stack_name: cf-task-definition-web
     container_definitions:
       - name: "nginx"
         cpu: 256
@@ -122,8 +122,8 @@ task_definition:
         image: "bendbennett/symfony2-api-swagger-jwt-src:v0.1.0"
         memory: 12
 
-role_ecs_service:
-  - stack_name: cf-role-ecs-service
+role_ecs_service_web:
+  - stack_name: cf-role-ecs-service-web
     service: "ecs.amazonaws.com"
     policies:
       - policy_name: "RoleEcsService"
@@ -135,22 +135,22 @@ role_ecs_service:
           - "elasticloadbalancing:RegisterInstancesWithLoadBalancer"
         resource: "*"
 
-service:
-  - stack_name: cf-service
-    cluster_stack_name: "{{ cluster_launch_configuration[0].stack_name }}"
+service_web:
+  - stack_name: cf-service-web
+    cluster_stack_name: "{{ cluster_launch_configuration_web[0].stack_name }}"
     desired_count: 2
-    load_balancer_name: "{{ load_balancer[0].name }}"
-    role_ecs_service_stack_name: "{{ role_ecs_service[0].stack_name }}"
-    task_definition_stack_name: "{{ task_definition[0].stack_name }}"
+    load_balancer_name: "{{ load_balancer_web[0].name }}"
+    role_ecs_service_stack_name: "{{ role_ecs_service_web[0].stack_name }}"
+    task_definition_stack_name: "{{ task_definition_web[0].stack_name }}"
 
 site_down:
-  - "{{ service[0].stack_name }}"
-  - "{{ role_ecs_service[0].stack_name }}"
-  - "{{ task_definition[0].stack_name }}"
-  - "{{ launch_configuration_auto_scaling_group[0].stack_name }}"
-  - "{{ cluster_launch_configuration[0].stack_name }}"
+  - "{{ service_web[0].stack_name }}"
+  - "{{ role_ecs_service_web[0].stack_name }}"
+  - "{{ task_definition_web[0].stack_name }}"
+  - "{{ launch_configuration_auto_scaling_group_web[0].stack_name }}"
+  - "{{ cluster_launch_configuration_web[0].stack_name }}"
   - "{{ instance_profile_launch_configuration[0].stack_name }}"
   - "{{ role_launch_configuration[0].stack_name }}"
-  - "{{ security_group_ec2_instance[0].stack_name }}"
-  - "{{ load_balancer[0].stack_name }}"
-  - "{{ security_group_load_balancer[0].stack_name }}"
+  - "{{ security_group_ec2_instance_web[0].stack_name }}"
+  - "{{ load_balancer_web[0].stack_name }}"
+  - "{{ security_group_load_balancer_web[0].stack_name }}"
