@@ -5,10 +5,15 @@
     - { role: common/ec2/security-group, security_group_items: "{{ security_group_load_balancer_web }}" }
     - { role: common/elb/load-balancer, load_balancer_items: "{{ load_balancer_web }}" }
     - { role: common/ec2/security-group, security_group_items: "{{ security_group_ec2_instance_web }}" }
+    - { role: common/ec2/security-group, security_group_items: "{{ security_group_ec2_instance_mongo }}" }
     - { role: common/iam/role, role_items: "{{ role_launch_configuration }}" }
     - { role: common/iam/instance-profile, instance_profile_items: "{{ instance_profile_launch_configuration }}" }
+    - { role: common/iam/role, role_items: "{{ role_ecs_service }}" }
+    - { role: common/ecs/cluster, cluster_items: "{{ cluster_launch_configuration_mongo }}" }
+    - { role: common/as/launch-configuration-auto-scaling-group, launch_configuration_auto_scaling_group_items: "{{ launch_configuration_auto_scaling_group_mongo }}" }
+    - { role: common/ecs/task-definition, task_definition_items: "{{ task_definition_mongo }}" }
+    - { role: common/ecs/service, service_items: "{{ service_mongo }}" }
     - { role: common/ecs/cluster, cluster_items: "{{ cluster_launch_configuration_web }}" }
     - { role: common/as/launch-configuration-auto-scaling-group, launch_configuration_auto_scaling_group_items: "{{ launch_configuration_auto_scaling_group_web }}" }
     - { role: common/ecs/task-definition, task_definition_items: "{{ task_definition_web }}" }
-    - { role: common/iam/role, role_items: "{{ role_ecs_service_web }}" }
     - { role: common/ecs/service, service_items: "{{ service_web }}" }

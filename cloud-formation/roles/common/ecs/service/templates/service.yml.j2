@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Service"
+
+Resources:
+  Service:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster:
+        Fn::ImportValue: {{ item.cluster_stack_name }}-cluster::id
+      DesiredCount: {{ item.desired_count }}
+{% if item.load_balancers is defined %}
+      LoadBalancers:
+{% for load_balancer in item.load_balancers %}
+        - ContainerName: {{ load_balancer.container_name }}
+          ContainerPort: {{ load_balancer.container_port }}
+          LoadBalancerName: {{ load_balancer.load_balancer_name }}
+{% endfor %}
+      Role:
+        Fn::ImportValue: {{ item.role_ecs_service_stack_name }}-role::id
+{% endif %}
+      TaskDefinition:
+        Fn::ImportValue: {{ item.task_definition_stack_name }}-task::definition::id
+
+Outputs:
+  ServiceId:
+    Description: "Service Id"
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-service::id
+    Value: { Ref: Service }
