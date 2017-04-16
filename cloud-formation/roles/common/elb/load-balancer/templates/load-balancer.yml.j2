@@ -15,6 +15,7 @@ Resources:
           Protocol: {{ listener.protocol }}
 {% endfor %}
       LoadBalancerName: {{ item.name }}
+      Scheme: {{ item.scheme }}
       SecurityGroups:
 {% for security_group_stack_name in item.security_group_stack_names %}
         - Fn::ImportValue: {{ security_group_stack_name }}-security::group::id

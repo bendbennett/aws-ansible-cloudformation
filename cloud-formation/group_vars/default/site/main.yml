@@ -15,7 +15,8 @@ load_balancer_web:
         instance_protocol: "HTTP"
         load_balancer_port: 80
         protocol: "HTTP"
-    name: "load-balancer-site"
+    name: "load-balancer-web"
+    scheme: "internet-facing"
     security_group_stack_names:
       - "{{ security_group_load_balancer_web[0].stack_name }}"
     subnet_stack_names:
@@ -31,11 +32,36 @@ security_group_ec2_instance_web:
     to_port: 80
     vpc_stack_name: "{{ vpc.stack_name }}"
 
+security_group_load_balancer_mongo:
+  - stack_name: cf-security-group-load-balancer-mongo
+    from_port: 27017
+    ip_protocol: tcp
+    security_group_stack_name: "{{ security_group_ec2_instance_web[0].stack_name }}"
+    security_group_type: "source_security_group_id"
+    to_port: 27017
+    vpc_stack_name: "{{ vpc.stack_name }}"
+
+load_balancer_mongo:
+  - stack_name: cf-load-balancer-mongo
+    cross_zone: true
+    listeners:
+      - instance_port: 27017
+        instance_protocol: "TCP"
+        load_balancer_port: 27017
+        protocol: "TCP"
+    name: "load-balancer-mongo"
+    scheme: "internal"
+    security_group_stack_names:
+      - "{{ security_group_load_balancer_mongo[0].stack_name }}"
+    subnet_stack_names:
+      - "{{ subnet_private[0].stack_name }}"
+      - "{{ subnet_private[1].stack_name }}"
+
 security_group_ec2_instance_mongo:
   - stack_name: cf-security-group-ec2-instance-mongo
     from_port: 27017
     ip_protocol: tcp
-    security_group_stack_name: "{{ security_group_ec2_instance_web[0].stack_name }}"
+    security_group_stack_name: "{{ security_group_load_balancer_mongo[0].stack_name }}"
     security_group_type: "source_security_group_id"
     to_port: 27017
     vpc_stack_name: "{{ vpc.stack_name }}"
@@ -186,6 +212,11 @@ service_mongo:
   - stack_name: cf-service-mongo
     cluster_stack_name: "{{ cluster_launch_configuration_mongo[0].stack_name }}"
     desired_count: 1
+    load_balancers:
+      - container_name: "mongo"
+        container_port: 27017
+        load_balancer_name: "{{ load_balancer_mongo[0].name }}"
+    role_ecs_service_stack_name: "{{ role_ecs_service[0].stack_name }}"
     task_definition_stack_name: "{{ task_definition_mongo[0].stack_name }}"
 
 site_down:
@@ -200,7 +231,9 @@ site_down:
   - "{{ cluster_launch_configuration_mongo[0].stack_name }}"
   - "{{ instance_profile_launch_configuration[0].stack_name }}"
   - "{{ role_launch_configuration[0].stack_name }}"
-  - "{{ security_group_ec2_instance_web[0].stack_name }}"
   - "{{ security_group_ec2_instance_mongo[0].stack_name }}"
+  - "{{ load_balancer_mongo[0].stack_name }}"
+  - "{{ security_group_load_balancer_mongo[0].stack_name }}"
+  - "{{ security_group_ec2_instance_web[0].stack_name }}"
   - "{{ load_balancer_web[0].stack_name }}"
   - "{{ security_group_load_balancer_web[0].stack_name }}"
