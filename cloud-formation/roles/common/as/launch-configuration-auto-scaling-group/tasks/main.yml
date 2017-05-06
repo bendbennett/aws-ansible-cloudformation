@@ -3,6 +3,7 @@
     src=roles/common/as/launch-configuration-auto-scaling-group/templates/launch-configuration-auto-scaling-group.yml.j2
     dest=roles/common/as/launch-configuration-auto-scaling-group/templates-generated/{{item.stack_name}}-template.yml
   with_items: "{{ launch_configuration_auto_scaling_group_items }}"
+  check_mode: no
 
 - name: cloudformation - as - launch-configuration-auto-scaling-group
   cloudformation:

@@ -67,6 +67,16 @@ role_launch_configuration:
           - "ecr:GetDownloadUrlForLayer"
           - "ecr:BatchGetImage"
         resource: "*"
+      - policy_name: "RoleLaunchConfigurationRoute53"
+        actions:
+          - "route53:ChangeResourceRecordSets"
+          - "route53:GetHostedZone"
+          - "route53:ListResourceRecordSets"
+        resource: "arn:aws:route53:::*"
+      - policy_name: "RoleLaunchConfigurationS3"
+        actions:
+          - "s3:GetObject"
+        resource: "arn:aws:s3:::*"
 
 instance_profile_launch_configuration:
   - stack_name: cf-instance-profile-launch-configuration
@@ -110,6 +120,8 @@ launch_configuration_auto_scaling_group_mongo:
     lc_key_name: "eu-west-1-synaptology-administrator"
     lc_security_group_stack_names:
       - "{{ security_group_ec2_instance_mongo[0].stack_name }}"
+    lc_user_data_aws_cli: true
+    lc_user_data_hosted_zone_stack_name: "{{ hosted_zone_private[0].stack_name }}"
     asg_desired_capacity: 3
     asg_health_check_type: "EC2"
     asg_max_size: 3
