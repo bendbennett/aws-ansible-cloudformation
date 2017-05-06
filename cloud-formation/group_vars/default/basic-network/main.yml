@@ -80,6 +80,13 @@ subnet_private:
     route_table_stack_name: "{{ route_table_private[2].stack_name }}"
     vpc_stack_name: "{{ vpc.stack_name }}"
 
+hosted_zone_private:
+  - stack_name: cf-hosted-zone-internal
+    name: "internal.synaptology.net"
+    vpcs:
+      - stack_name: "{{ vpc.stack_name }}"
+        region: "{{ region }}"
+
 basic_network_down:
   - "{{ subnet_private[2].stack_name }}"
   - "{{ subnet_private[1].stack_name }}"

@@ -1,0 +1,15 @@
+- name: cloudformation - r53 - hosted-zone - render template
+  template:
+    src=roles/common/r53/hosted-zone/templates/hosted-zone.yml.j2
+    dest=roles/common/r53/hosted-zone/templates-generated/{{item.stack_name}}.yml
+  with_items: "{{ hosted_zone_items }}"
+  check_mode: no
+
+- name: cloudformation - r53 - hosted-zone
+  cloudformation:
+    stack_name: "{{ item.stack_name }}"
+    state: "present"
+    region: "{{ region }}"
+    disable_rollback: true
+    template: roles/common/r53/hosted-zone/templates-generated/{{item.stack_name}}.yml
+  with_items: "{{ hosted_zone_items }}"

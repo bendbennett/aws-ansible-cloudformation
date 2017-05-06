@@ -1,4 +1,4 @@
-- hosts: default
+- hosts: site
   connection: local
   gather_facts: false
   roles:

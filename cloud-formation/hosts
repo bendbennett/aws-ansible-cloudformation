@@ -1,2 +1,10 @@
 [default]
 localhost
+basic-network
+site
+
+[basic-network]
+basic-network
+
+[site]
+site
