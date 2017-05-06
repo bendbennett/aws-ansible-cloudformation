@@ -5,8 +5,6 @@
     - { role: common/ec2/security-group, security_group_items: "{{ security_group_load_balancer_web }}" }
     - { role: common/elb/load-balancer, load_balancer_items: "{{ load_balancer_web }}" }
     - { role: common/ec2/security-group, security_group_items: "{{ security_group_ec2_instance_web }}" }
-    - { role: common/ec2/security-group, security_group_items: "{{ security_group_load_balancer_mongo }}" }
-    - { role: common/elb/load-balancer, load_balancer_items: "{{ load_balancer_mongo }}" }
     - { role: common/ec2/security-group, security_group_items: "{{ security_group_ec2_instance_mongo }}" }
     - { role: common/iam/role, role_items: "{{ role_launch_configuration }}" }
     - { role: common/iam/instance-profile, instance_profile_items: "{{ instance_profile_launch_configuration }}" }

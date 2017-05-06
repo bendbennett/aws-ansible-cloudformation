@@ -22,6 +22,7 @@ load_balancer_web:
     subnet_stack_names:
       - "{{ subnet_public[0].stack_name }}"
       - "{{ subnet_public[1].stack_name }}"
+      - "{{ subnet_public[2].stack_name }}"
 
 security_group_ec2_instance_web:
   - stack_name: cf-security-group-ec2-instance-web
@@ -32,36 +33,11 @@ security_group_ec2_instance_web:
     to_port: 80
     vpc_stack_name: "{{ vpc.stack_name }}"
 
-security_group_load_balancer_mongo:
-  - stack_name: cf-security-group-load-balancer-mongo
-    from_port: 27017
-    ip_protocol: tcp
-    security_group_stack_name: "{{ security_group_ec2_instance_web[0].stack_name }}"
-    security_group_type: "source_security_group_id"
-    to_port: 27017
-    vpc_stack_name: "{{ vpc.stack_name }}"
-
-load_balancer_mongo:
-  - stack_name: cf-load-balancer-mongo
-    cross_zone: true
-    listeners:
-      - instance_port: 27017
-        instance_protocol: "TCP"
-        load_balancer_port: 27017
-        protocol: "TCP"
-    name: "load-balancer-mongo"
-    scheme: "internal"
-    security_group_stack_names:
-      - "{{ security_group_load_balancer_mongo[0].stack_name }}"
-    subnet_stack_names:
-      - "{{ subnet_private[0].stack_name }}"
-      - "{{ subnet_private[1].stack_name }}"
-
 security_group_ec2_instance_mongo:
   - stack_name: cf-security-group-ec2-instance-mongo
     from_port: 27017
     ip_protocol: tcp
-    security_group_stack_name: "{{ security_group_load_balancer_mongo[0].stack_name }}"
+    security_group_stack_name: "{{ security_group_ec2_instance_web[0].stack_name }}"
     security_group_type: "source_security_group_id"
     to_port: 27017
     vpc_stack_name: "{{ vpc.stack_name }}"
@@ -110,36 +86,38 @@ launch_configuration_auto_scaling_group_web:
     lc_associate_public_ip_address: false
     lc_cluster_stack_name: "{{ cluster_launch_configuration_web[0].stack_name }}"
     lc_iam_instance_profile_stack_name: "{{ instance_profile_launch_configuration[0].stack_name }}"
-    lc_image_id: "ami-bf9481db"
+    lc_image_id: "ami-95f8d2f3"
     lc_instance_type: "t2.micro"
-    lc_key_name: "synaptology-administrator"
+    lc_key_name: "eu-west-1-synaptology-administrator"
     lc_security_group_stack_names:
       - "{{ security_group_ec2_instance_web[0].stack_name }}"
-    asg_desired_capacity: 2
+    asg_desired_capacity: 3
     asg_health_check_type: "EC2"
-    asg_max_size: 2
+    asg_max_size: 3
     asg_min_size: 1
     asg_vpc_zone_identifiers:
       - "{{ subnet_private[0].stack_name }}"
       - "{{ subnet_private[1].stack_name }}"
+      - "{{ subnet_private[2].stack_name }}"
 
 launch_configuration_auto_scaling_group_mongo:
   - stack_name: cf-launch-configuration-auto-scaling-group-mongo
     lc_associate_public_ip_address: false
     lc_cluster_stack_name: "{{ cluster_launch_configuration_mongo[0].stack_name }}"
     lc_iam_instance_profile_stack_name: "{{ instance_profile_launch_configuration[0].stack_name }}"
-    lc_image_id: "ami-bf9481db"
+    lc_image_id: "ami-95f8d2f3"
     lc_instance_type: "t2.micro"
-    lc_key_name: "synaptology-administrator"
+    lc_key_name: "eu-west-1-synaptology-administrator"
     lc_security_group_stack_names:
       - "{{ security_group_ec2_instance_mongo[0].stack_name }}"
-    asg_desired_capacity: 1
+    asg_desired_capacity: 3
     asg_health_check_type: "EC2"
-    asg_max_size: 1
+    asg_max_size: 3
     asg_min_size: 1
     asg_vpc_zone_identifiers:
       - "{{ subnet_private[0].stack_name }}"
       - "{{ subnet_private[1].stack_name }}"
+      - "{{ subnet_private[2].stack_name }}"
 
 task_definition_web:
   - stack_name: cf-task-definition-web
@@ -178,7 +156,7 @@ task_definition_mongo:
       - name: "mongo"
         cpu: 256
         essential: true
-        image: "bendbennett/mongo-seeded:v0.1.0"
+        image: "bendbennett/mongo-seeded:v0.3.0"
         memory: 256
         port_mappings:
           - container_port: 27017
@@ -200,7 +178,7 @@ role_ecs_service:
 service_web:
   - stack_name: cf-service-web
     cluster_stack_name: "{{ cluster_launch_configuration_web[0].stack_name }}"
-    desired_count: 2
+    desired_count: 3
     load_balancers:
       - container_name: "nginx"
         container_port: 80
@@ -211,12 +189,7 @@ service_web:
 service_mongo:
   - stack_name: cf-service-mongo
     cluster_stack_name: "{{ cluster_launch_configuration_mongo[0].stack_name }}"
-    desired_count: 1
-    load_balancers:
-      - container_name: "mongo"
-        container_port: 27017
-        load_balancer_name: "{{ load_balancer_mongo[0].name }}"
-    role_ecs_service_stack_name: "{{ role_ecs_service[0].stack_name }}"
+    desired_count: 3
     task_definition_stack_name: "{{ task_definition_mongo[0].stack_name }}"
 
 site_down:
@@ -232,8 +205,6 @@ site_down:
   - "{{ instance_profile_launch_configuration[0].stack_name }}"
   - "{{ role_launch_configuration[0].stack_name }}"
   - "{{ security_group_ec2_instance_mongo[0].stack_name }}"
-  - "{{ load_balancer_mongo[0].stack_name }}"
-  - "{{ security_group_load_balancer_mongo[0].stack_name }}"
   - "{{ security_group_ec2_instance_web[0].stack_name }}"
   - "{{ load_balancer_web[0].stack_name }}"
   - "{{ security_group_load_balancer_web[0].stack_name }}"

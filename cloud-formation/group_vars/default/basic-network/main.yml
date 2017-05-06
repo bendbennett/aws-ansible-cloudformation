@@ -25,14 +25,20 @@ route_table_public:
 
 subnet_public:
   - stack_name: cf-subnet-public-1
-    availability_zone: eu-west-2a
+    availability_zone: eu-west-1a
     cidr_block: 10.0.0.0/24
     network_acl_stack_name: "{{ network_acl.stack_name }}"
     route_table_stack_name: "{{ route_table_public[0].stack_name }}"
     vpc_stack_name: "{{ vpc.stack_name }}"
   - stack_name: cf-subnet-public-2
-    availability_zone: eu-west-2b
+    availability_zone: eu-west-1b
     cidr_block: 10.0.1.0/24
+    network_acl_stack_name: "{{ network_acl.stack_name }}"
+    route_table_stack_name: "{{ route_table_public[0].stack_name }}"
+    vpc_stack_name: "{{ vpc.stack_name }}"
+  - stack_name: cf-subnet-public-3
+    availability_zone: eu-west-1c
+    cidr_block: 10.0.2.0/24
     network_acl_stack_name: "{{ network_acl.stack_name }}"
     route_table_stack_name: "{{ route_table_public[0].stack_name }}"
     vpc_stack_name: "{{ vpc.stack_name }}"
@@ -48,26 +54,40 @@ route_table_private:
     gateway_type: "nat"
     subnet_public_stack_name: "{{ subnet_public[1].stack_name }}"
     vpc_stack_name: "{{ vpc.stack_name }}"
+  - stack_name: cf-route-table-private-3
+    destination_cidr_block: 0.0.0.0/0
+    gateway_type: "nat"
+    subnet_public_stack_name: "{{ subnet_public[2].stack_name }}"
+    vpc_stack_name: "{{ vpc.stack_name }}"
 
 subnet_private:
   - stack_name: cf-subnet-private-1
-    availability_zone: eu-west-2a
+    availability_zone: eu-west-1a
     cidr_block: 10.0.128.0/24
     network_acl_stack_name: "{{ network_acl.stack_name }}"
     route_table_stack_name: "{{ route_table_private[0].stack_name }}"
     vpc_stack_name: "{{ vpc.stack_name }}"
   - stack_name: cf-subnet-private-2
-    availability_zone: eu-west-2b
+    availability_zone: eu-west-1b
     cidr_block: 10.0.129.0/24
     network_acl_stack_name: "{{ network_acl.stack_name }}"
     route_table_stack_name: "{{ route_table_private[1].stack_name }}"
     vpc_stack_name: "{{ vpc.stack_name }}"
+  - stack_name: cf-subnet-private-3
+    availability_zone: eu-west-1c
+    cidr_block: 10.0.130.0/24
+    network_acl_stack_name: "{{ network_acl.stack_name }}"
+    route_table_stack_name: "{{ route_table_private[2].stack_name }}"
+    vpc_stack_name: "{{ vpc.stack_name }}"
 
 basic_network_down:
+  - "{{ subnet_private[2].stack_name }}"
   - "{{ subnet_private[1].stack_name }}"
   - "{{ subnet_private[0].stack_name }}"
+  - "{{ route_table_private[2].stack_name }}"
   - "{{ route_table_private[1].stack_name }}"
   - "{{ route_table_private[0].stack_name }}"
+  - "{{ subnet_public[2].stack_name }}"
   - "{{ subnet_public[1].stack_name }}"
   - "{{ subnet_public[0].stack_name }}"
   - "{{ route_table_public[0].stack_name }}"
