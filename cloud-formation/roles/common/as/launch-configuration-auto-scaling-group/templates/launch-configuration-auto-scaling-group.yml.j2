@@ -92,16 +92,21 @@ Resources:
               - " --resource LaunchConfiguration --region "
               - Ref: AWS::Region
               - "\n"
+{% if item.lc_user_data_aws_cli is defined %}
+              - "yum install -y aws-cli\n"
+{% endif %}
+{% if item.lc_user_data_hosted_zone_stack_name is defined %}
+              - "HOSTED_ZONE_ID="
+              - Fn::ImportValue: {{ item.lc_user_data_hosted_zone_stack_name }}-hosted::zone::id
+              - "\n"
+              - "AVAILABILITY_ZONE=$(curl http://169.254.169.254/latest/meta-data/placement/availability-zone)\n"
+              - "IPV4=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)\n"
+              - "aws s3api get-object --bucket synaptology-templates --key upsert-resource-record-set.sh upsert-resource-record-set.sh\n"
+              - "chmod 755 upsert-resource-record-set.sh\n"
+              - "./upsert-resource-record-set.sh $AVAILABILITY_ZONE $IPV4 $HOSTED_ZONE_ID\n"
+{% endif %}
               - "/opt/aws/bin/cfn-signal -e $? --stack "
               - Ref: AWS::StackName
               - " --resource AutoScalingGroup --region "
               - Ref: AWS::Region
               - "\n"
-{% if item.lc_user_data_aws_cli is defined %}
-              - "yum install -y aws-cli\n"
-{% endif %}
-{% if item.lc_user_data_hosted_zone_stack_name is defined %}
-              - "echo export HOSTED_ZONE_ID="
-              - Fn::ImportValue: {{ item.lc_user_data_hosted_zone_stack_name }}-hosted::zone::id
-              - ">> /etc/environment\n"
-{% endif %}

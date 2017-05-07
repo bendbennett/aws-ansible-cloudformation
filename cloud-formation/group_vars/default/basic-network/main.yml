@@ -88,6 +88,7 @@ hosted_zone_private:
         region: "{{ region }}"
 
 basic_network_down:
+  - "{{ hosted_zone_private[0].stack_name }}"
   - "{{ subnet_private[2].stack_name }}"
   - "{{ subnet_private[1].stack_name }}"
   - "{{ subnet_private[0].stack_name }}"
