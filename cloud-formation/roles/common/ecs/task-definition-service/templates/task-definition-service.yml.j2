@@ -54,6 +54,9 @@ Resources:
 {% endfor %}
 {% endif %}
 {% endfor %}
+{% if item.family is defined %}
+      Family: "{{ item.family }}"
+{% endif %}
 {% if item.volumes is defined %}
       Volumes:
 {% for volume in item.volumes %}
@@ -63,10 +66,35 @@ Resources:
 {% endfor %}
 {% endif %}
 
+  Service:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster:
+        Fn::ImportValue: {{ item.cluster_stack_name }}-cluster::id
+{% if item.deployment_configuration is defined %}
+      DeploymentConfiguration:
+{% if item.deployment_configuration.minimum_healthy_percent is defined %}
+        MinimumHealthyPercent: {{ item.deployment_configuration.minimum_healthy_percent }}
+{% endif %}
+{% endif %}
+      DesiredCount: {{ item.desired_count }}
+{% if item.load_balancers is defined %}
+      LoadBalancers:
+{% for load_balancer in item.load_balancers %}
+        - ContainerName: {{ load_balancer.container_name }}
+          ContainerPort: {{ load_balancer.container_port }}
+          LoadBalancerName: {{ load_balancer.load_balancer_name }}
+{% endfor %}
+      Role:
+        Fn::ImportValue: {{ item.role_ecs_service_stack_name }}-role::id
+{% endif %}
+      TaskDefinition:
+        Ref: TaskDefinition
+
 Outputs:
-  TaskDefinitionId:
-    Description: "Task Definition Id"
+  ServiceId:
+    Description: "Service Id"
     Export:
       Name:
-        Fn::Sub: ${AWS::StackName}-task::definition::id
-    Value: { Ref: TaskDefinition }
+        Fn::Sub: ${AWS::StackName}-service::id
+    Value: { Ref: Service }

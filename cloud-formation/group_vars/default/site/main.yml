@@ -131,8 +131,21 @@ launch_configuration_auto_scaling_group_mongo:
       - "{{ subnet_private[1].stack_name }}"
       - "{{ subnet_private[2].stack_name }}"
 
-task_definition_web:
-  - stack_name: cf-task-definition-web
+role_ecs_service:
+  - stack_name: cf-role-ecs-service
+    service: "ecs.amazonaws.com"
+    policies:
+      - policy_name: "RoleEcsService"
+        actions:
+          - "ec2:AuthorizeSecurityGroupIngress"
+          - "ec2:Describe*"
+          - "elasticloadbalancing:DeregisterInstancesFromLoadBalancer"
+          - "elasticloadbalancing:Describe*"
+          - "elasticloadbalancing:RegisterInstancesWithLoadBalancer"
+        resource: "*"
+
+task_definition_service_web:
+  - stack_name: cf-task-definition-service-web
     container_definitions:
       - name: "nginx"
         cpu: 256
@@ -161,34 +174,9 @@ task_definition_web:
         essential: true
         image: "bendbennett/symfony2-api-swagger-jwt-src:v0.1.0"
         memory: 12
-
-task_definition_mongo:
-  - stack_name: cf-task-definition-mongo
-    container_definitions:
-      - name: "mongo"
-        cpu: 256
-        essential: true
-        image: "bendbennett/mongo-seeded:v0.3.0"
-        memory: 256
-        port_mappings:
-          - container_port: 27017
-            host_port: 27017
-
-role_ecs_service:
-  - stack_name: cf-role-ecs-service
-    service: "ecs.amazonaws.com"
-    policies:
-      - policy_name: "RoleEcsService"
-        actions:
-          - "ec2:AuthorizeSecurityGroupIngress"
-          - "ec2:Describe*"
-          - "elasticloadbalancing:DeregisterInstancesFromLoadBalancer"
-          - "elasticloadbalancing:Describe*"
-          - "elasticloadbalancing:RegisterInstancesWithLoadBalancer"
-        resource: "*"
-
-service_web:
-  - stack_name: cf-service-web
+    deployment_configuration:
+      minimum_healthy_percent: 50
+    family: "web"
     cluster_stack_name: "{{ cluster_launch_configuration_web[0].stack_name }}"
     desired_count: 3
     load_balancers:
@@ -196,20 +184,31 @@ service_web:
         container_port: 80
         load_balancer_name: "{{ load_balancer_web[0].name }}"
     role_ecs_service_stack_name: "{{ role_ecs_service[0].stack_name }}"
-    task_definition_stack_name: "{{ task_definition_web[0].stack_name }}"
 
-service_mongo:
-  - stack_name: cf-service-mongo
+task_definition_service_mongo:
+  - stack_name: cf-task-definition-service-mongo
+    container_definitions:
+      - name: "mongo"
+        cpu: 256
+        environment:
+          - name: AVAILABILITY_ZONE
+            value: ${AVAILABILITY_ZONE}
+        essential: true
+        image: "bendbennett/mongo-seeded:v0.3.0"
+        memory: 256
+        port_mappings:
+          - container_port: 27017
+            host_port: 27017
+    deployment_configuration:
+      minimum_healthy_percent: 50
+    family: "mongo"
     cluster_stack_name: "{{ cluster_launch_configuration_mongo[0].stack_name }}"
     desired_count: 3
-    task_definition_stack_name: "{{ task_definition_mongo[0].stack_name }}"
 
 site_down:
-  - "{{ service_web[0].stack_name }}"
-  - "{{ service_mongo[0].stack_name }}"
+  - "{{ task_definition_service_web[0].stack_name }}"
+  - "{{ task_definition_service_mongo[0].stack_name }}"
   - "{{ role_ecs_service[0].stack_name }}"
-  - "{{ task_definition_web[0].stack_name }}"
-  - "{{ task_definition_mongo[0].stack_name }}"
   - "{{ launch_configuration_auto_scaling_group_web[0].stack_name }}"
   - "{{ launch_configuration_auto_scaling_group_mongo[0].stack_name }}"
   - "{{ cluster_launch_configuration_web[0].stack_name }}"

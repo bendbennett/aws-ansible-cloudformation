@@ -11,9 +11,7 @@
     - { role: common/iam/role, role_items: "{{ role_ecs_service }}" }
     - { role: common/ecs/cluster, cluster_items: "{{ cluster_launch_configuration_mongo }}" }
     - { role: common/as/launch-configuration-auto-scaling-group, launch_configuration_auto_scaling_group_items: "{{ launch_configuration_auto_scaling_group_mongo }}" }
-    - { role: common/ecs/task-definition, task_definition_items: "{{ task_definition_mongo }}" }
-    - { role: common/ecs/service, service_items: "{{ service_mongo }}" }
+    - { role: common/ecs/task-definition-service, task_definition_service_items: "{{ task_definition_service_mongo }}" }
     - { role: common/ecs/cluster, cluster_items: "{{ cluster_launch_configuration_web }}" }
     - { role: common/as/launch-configuration-auto-scaling-group, launch_configuration_auto_scaling_group_items: "{{ launch_configuration_auto_scaling_group_web }}" }
-    - { role: common/ecs/task-definition, task_definition_items: "{{ task_definition_web }}" }
-    - { role: common/ecs/service, service_items: "{{ service_web }}" }
+    - { role: common/ecs/task-definition-service, task_definition_service_items: "{{ task_definition_service_web }}" }
