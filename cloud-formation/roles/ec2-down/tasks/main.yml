@@ -1,5 +1,0 @@
-- name: cloudformation - ec2
-  cloudformation:
-    stack_name: cf-ec2-auto-scaling-group-public
-    state: "absent"
-    region: "{{ region }}"
