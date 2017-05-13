@@ -1,16 +1,15 @@
+- name: cloudformation - ec2- security-group - render template
+  template:
+    src=roles/common/ec2/security-group/templates/security-group.yml.j2
+    dest=roles/common/ec2/security-group/templates-generated/{{item.stack_name}}-template.yml
+  with_items: "{{ security_group_items }}"
+  check_mode: no
+
 - name: cloudformation - ec2- security-group
   cloudformation:
     stack_name: "{{ item.stack_name }}"
     state: "present"
     region: "{{ region }}"
     disable_rollback: true
-    template: roles/common/ec2/security-group/templates/security-group.yml
-    template_parameters:
-      CidrIp: "{{ item.cidr_ip | default('') }}"
-      FromPort: "{{ item.from_port }}"
-      IpProtocol: "{{ item.ip_protocol }}"
-      SecurityGroupStackName: "{{ item.security_group_stack_name | default('') }}"
-      SecurityGroupType: "{{ item.security_group_type }}"
-      ToPort: "{{ item.to_port }}"
-      VpcStackName: "{{ item.vpc_stack_name }}"
+    template: roles/common/ec2/security-group/templates-generated/{{item.stack_name}}-template.yml
   with_items: "{{ security_group_items }}"

@@ -1,10 +1,10 @@
 security_group_load_balancer_web:
   - stack_name: cf-security-group-load-balancer-web
-    cidr_ip: 0.0.0.0/0
-    from_port: 80
-    ip_protocol: tcp
-    security_group_type: "cidr_ip"
-    to_port: 80
+    security_group_ingress:
+      - cidr_ip: 0.0.0.0/0
+        from_port: 80
+        ip_protocol: tcp
+        to_port: 80
     vpc_stack_name: "{{ vpc.stack_name }}"
 
 load_balancer_web:
@@ -26,20 +26,21 @@ load_balancer_web:
 
 security_group_ec2_instance_web:
   - stack_name: cf-security-group-ec2-instance-web
-    from_port: 80
-    ip_protocol: tcp
-    security_group_stack_name: "{{ security_group_load_balancer_web[0].stack_name }}"
-    security_group_type: "source_security_group_id"
-    to_port: 80
+    security_group_ingress:
+      - from_port: 80
+        ip_protocol: tcp
+        security_group_stack_name: "{{ security_group_load_balancer_web[0].stack_name }}"
+        to_port: 80
     vpc_stack_name: "{{ vpc.stack_name }}"
 
 security_group_ec2_instance_mongo:
   - stack_name: cf-security-group-ec2-instance-mongo
-    from_port: 27017
-    ip_protocol: tcp
-    security_group_stack_name: "{{ security_group_ec2_instance_web[0].stack_name }}"
-    security_group_type: "source_security_group_id"
-    to_port: 27017
+    security_group_ingress:
+      - from_port: 27017
+        ip_protocol: tcp
+        security_group_stack_name: "{{ security_group_ec2_instance_web[0].stack_name }}"
+        self_referencing: true
+        to_port: 27017
     vpc_stack_name: "{{ vpc.stack_name }}"
 
 role_launch_configuration:
