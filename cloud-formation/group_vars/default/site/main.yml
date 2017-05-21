@@ -191,9 +191,6 @@ task_definition_service_mongo:
     container_definitions:
       - name: "mongo"
         cpu: 256
-        environment:
-          - name: AVAILABILITY_ZONE
-            value: ${AVAILABILITY_ZONE}
         essential: true
         image: "bendbennett/mongo-seeded:v0.3.0"
         memory: 256
