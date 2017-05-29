@@ -163,6 +163,9 @@ task_definition_service_web:
             read_only: false
       - name: "php"
         cpu: 256
+        environment:
+          - name: SY_MONGODB_SERVER
+            value: "mongodb://mongo-rs1.internal.synaptology.net:27017,mongo-rs2.internal.synaptology.net:27017,mongo-rs3.internal.synaptology.net:27017/?replicaSet=rs0"
         essential: true
         image: "bendbennett/php7-fpm:v0.3.0"
         memory: 256
@@ -173,7 +176,7 @@ task_definition_service_web:
         command: [ "ping", "127.0.0.1", "-q" ]
         cpu: 128
         essential: true
-        image: "bendbennett/symfony2-api-swagger-jwt-src:v0.1.0"
+        image: "bendbennett/symfony-api-swagger-jwt-src:v0.1.0"
         memory: 12
     deployment_configuration:
       minimum_healthy_percent: 50
