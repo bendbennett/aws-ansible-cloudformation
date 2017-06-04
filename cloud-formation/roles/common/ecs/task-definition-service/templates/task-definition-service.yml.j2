@@ -31,6 +31,22 @@ Resources:
             - "{{ link }}"
 {% endfor %}
 {% endif %}
+{% if container_definition.log_configuration is defined %}
+          LogConfiguration:
+            LogDriver: {{ container_definition.log_configuration.log_driver }}
+            Options:
+              awslogs-region: {{ container_definition.log_configuration.options.awslogs_region }}
+              awslogs-group:
+{% if container_definition.log_configuration.options.awslogs_group_stack_name is defined %}
+                Fn::ImportValue: {{ container_definition.log_configuration.options.awslogs_group_stack_name }}-log::group::id
+{% endif %}
+{% if container_definition.log_configuration.options.awslogs_group_name is defined %}
+                {{ container_definition.log_configuration.options.awslogs_group_name }}
+{% endif %}
+{% if container_definition.log_configuration.options.awslogs_stream_prefix is defined %}
+              awslogs-stream-prefix: {{ container_definition.log_configuration.options.awslogs_stream_prefix }}
+{% endif %}
+{% endif %}
           Memory: {{ container_definition.memory }}
 {% if container_definition.mount_points is defined %}
           MountPoints:

@@ -84,32 +84,27 @@ instance_profile_launch_configuration:
     role_stack_names:
       - "{{ role_launch_configuration[0].stack_name }}"
 
-cluster_launch_configuration_web:
-  - stack_name: cf-cluster-web
-    cluster_name: "cluster-web"
+role_ecs_service:
+  - stack_name: cf-role-ecs-service
+    service: "ecs.amazonaws.com"
+    policies:
+      - policy_name: "RoleEcsService"
+        actions:
+          - "ec2:AuthorizeSecurityGroupIngress"
+          - "ec2:Describe*"
+          - "elasticloadbalancing:DeregisterInstancesFromLoadBalancer"
+          - "elasticloadbalancing:Describe*"
+          - "elasticloadbalancing:RegisterInstancesWithLoadBalancer"
+        resource: "*"
+
+log_group:
+  - stack_name: cf-log-group
+    log_group_name: "symfony-api-swagger-jwt"
+    retention_in_days: 3
 
 cluster_launch_configuration_mongo:
   - stack_name: cf-cluster-mongo
     cluster_name: "cluster-mongo"
-
-launch_configuration_auto_scaling_group_web:
-  - stack_name: cf-launch-configuration-auto-scaling-group-web
-    lc_associate_public_ip_address: false
-    lc_cluster_stack_name: "{{ cluster_launch_configuration_web[0].stack_name }}"
-    lc_iam_instance_profile_stack_name: "{{ instance_profile_launch_configuration[0].stack_name }}"
-    lc_image_id: "ami-95f8d2f3"
-    lc_instance_type: "t2.micro"
-    lc_key_name: "eu-west-1-synaptology-administrator"
-    lc_security_group_stack_names:
-      - "{{ security_group_ec2_instance_web[0].stack_name }}"
-    asg_desired_capacity: 3
-    asg_health_check_type: "EC2"
-    asg_max_size: 3
-    asg_min_size: 1
-    asg_vpc_zone_identifiers:
-      - "{{ subnet_private[0].stack_name }}"
-      - "{{ subnet_private[1].stack_name }}"
-      - "{{ subnet_private[2].stack_name }}"
 
 launch_configuration_auto_scaling_group_mongo:
   - stack_name: cf-launch-configuration-auto-scaling-group-mongo
@@ -132,18 +127,51 @@ launch_configuration_auto_scaling_group_mongo:
       - "{{ subnet_private[1].stack_name }}"
       - "{{ subnet_private[2].stack_name }}"
 
-role_ecs_service:
-  - stack_name: cf-role-ecs-service
-    service: "ecs.amazonaws.com"
-    policies:
-      - policy_name: "RoleEcsService"
-        actions:
-          - "ec2:AuthorizeSecurityGroupIngress"
-          - "ec2:Describe*"
-          - "elasticloadbalancing:DeregisterInstancesFromLoadBalancer"
-          - "elasticloadbalancing:Describe*"
-          - "elasticloadbalancing:RegisterInstancesWithLoadBalancer"
-        resource: "*"
+task_definition_service_mongo:
+  - stack_name: cf-task-definition-service-mongo
+    container_definitions:
+      - name: "mongo"
+        cpu: 256
+        essential: true
+        image: "bendbennett/mongo-seeded:v0.3.0"
+        log_configuration:
+          log_driver: "awslogs"
+          options:
+            awslogs_region: "{{ region }}"
+            awslogs_group_name: "symfony-api-swagger-jwt"
+            awslogs_stream_prefix: "mongo"
+        memory: 256
+        port_mappings:
+          - container_port: 27017
+            host_port: 27017
+    deployment_configuration:
+      minimum_healthy_percent: 50
+    family: "mongo"
+    cluster_stack_name: "{{ cluster_launch_configuration_mongo[0].stack_name }}"
+    desired_count: 3
+
+cluster_launch_configuration_web:
+  - stack_name: cf-cluster-web
+    cluster_name: "cluster-web"
+
+launch_configuration_auto_scaling_group_web:
+  - stack_name: cf-launch-configuration-auto-scaling-group-web
+    lc_associate_public_ip_address: false
+    lc_cluster_stack_name: "{{ cluster_launch_configuration_web[0].stack_name }}"
+    lc_iam_instance_profile_stack_name: "{{ instance_profile_launch_configuration[0].stack_name }}"
+    lc_image_id: "ami-95f8d2f3"
+    lc_instance_type: "t2.micro"
+    lc_key_name: "eu-west-1-synaptology-administrator"
+    lc_security_group_stack_names:
+      - "{{ security_group_ec2_instance_web[0].stack_name }}"
+    asg_desired_capacity: 3
+    asg_health_check_type: "EC2"
+    asg_max_size: 3
+    asg_min_size: 1
+    asg_vpc_zone_identifiers:
+      - "{{ subnet_private[0].stack_name }}"
+      - "{{ subnet_private[1].stack_name }}"
+      - "{{ subnet_private[2].stack_name }}"
 
 task_definition_service_web:
   - stack_name: cf-task-definition-service-web
@@ -154,6 +182,12 @@ task_definition_service_web:
         image: "bendbennett/nginx:v0.1.0"
         links:
           - php
+        log_configuration:
+          log_driver: "awslogs"
+          options:
+            awslogs_region: "{{ region }}"
+            awslogs_group_name: "symfony-api-swagger-jwt"
+            awslogs_stream_prefix: "nginx"
         memory: 128
         port_mappings:
           - container_port: 80
@@ -168,6 +202,12 @@ task_definition_service_web:
             value: "mongodb://mongo-rs1.internal.synaptology.net:27017,mongo-rs2.internal.synaptology.net:27017,mongo-rs3.internal.synaptology.net:27017/?replicaSet=rs0"
         essential: true
         image: "bendbennett/php7-fpm:v0.3.0"
+        log_configuration:
+          log_driver: "awslogs"
+          options:
+            awslogs_region: "{{ region }}"
+            awslogs_group_name: "symfony-api-swagger-jwt"
+            awslogs_stream_prefix: "php-fpm"
         memory: 256
         volumes_from:
           - source_container: src
@@ -189,31 +229,14 @@ task_definition_service_web:
         load_balancer_name: "{{ load_balancer_web[0].name }}"
     role_ecs_service_stack_name: "{{ role_ecs_service[0].stack_name }}"
 
-task_definition_service_mongo:
-  - stack_name: cf-task-definition-service-mongo
-    container_definitions:
-      - name: "mongo"
-        cpu: 256
-        essential: true
-        image: "bendbennett/mongo-seeded:v0.3.0"
-        memory: 256
-        port_mappings:
-          - container_port: 27017
-            host_port: 27017
-    deployment_configuration:
-      minimum_healthy_percent: 50
-    family: "mongo"
-    cluster_stack_name: "{{ cluster_launch_configuration_mongo[0].stack_name }}"
-    desired_count: 3
-
 site_down:
   - "{{ task_definition_service_web[0].stack_name }}"
-  - "{{ task_definition_service_mongo[0].stack_name }}"
-  - "{{ role_ecs_service[0].stack_name }}"
   - "{{ launch_configuration_auto_scaling_group_web[0].stack_name }}"
-  - "{{ launch_configuration_auto_scaling_group_mongo[0].stack_name }}"
   - "{{ cluster_launch_configuration_web[0].stack_name }}"
+  - "{{ task_definition_service_mongo[0].stack_name }}"
+  - "{{ launch_configuration_auto_scaling_group_mongo[0].stack_name }}"
   - "{{ cluster_launch_configuration_mongo[0].stack_name }}"
+  - "{{ role_ecs_service[0].stack_name }}"
   - "{{ instance_profile_launch_configuration[0].stack_name }}"
   - "{{ role_launch_configuration[0].stack_name }}"
   - "{{ security_group_ec2_instance_mongo[0].stack_name }}"

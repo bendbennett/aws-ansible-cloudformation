@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Log Group"
+
+Resources:
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+{% if item.log_group_name is defined %}
+      LogGroupName: {{ item.log_group_name }}
+{% endif %}
+      RetentionInDays: {{ item.retention_in_days }}
+
+Outputs:
+  LogGroupId:
+    Description: "Log Group Id"
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-log::group::id
+    Value: { Ref: LogGroup }

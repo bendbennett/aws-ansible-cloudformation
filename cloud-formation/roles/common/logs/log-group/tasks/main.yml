@@ -1,0 +1,15 @@
+- name: cloudformation - logs - log-group - render template
+  template:
+    src=roles/common/logs/log-group/templates/log-group.yml.j2
+    dest=roles/common/logs/log-group/templates-generated/log-group-{{item.stack_name}}.yml
+  with_items: "{{ log_group_items }}"
+
+- name: cloudformation - logs - log-group
+  when: dry_run is undefined
+  cloudformation:
+    stack_name: "{{ item.stack_name }}"
+    state: "present"
+    region: "{{ region }}"
+    disable_rollback: true
+    template: roles/common/logs/log-group/templates-generated/log-group-{{item.stack_name}}.yml
+  with_items: "{{ log_group_items }}"
