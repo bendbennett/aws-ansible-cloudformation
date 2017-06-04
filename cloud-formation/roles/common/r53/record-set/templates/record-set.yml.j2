@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Record Set"
+
+Resources:
+  RecordSet:
+    Type: AWS::Route53::RecordSet
+    Properties:
+{% if item.hosted_zone_stack_name is defined%}
+      HostedZoneId:
+        Fn::ImportValue: {{ item.hosted_zone_stack_name }}-hosted::zone::id
+{% endif %}
+{% if item.hosted_zone_name is defined%}
+      HostedZoneName: {{ item.hosted_zone_name }}
+{% endif %}
+      Name: {{ item.name }}
+{% if item.resource_records is defined%}
+      ResourceRecords:
+{% for resource_record in item.resource_records %}
+        - Fn::ImportValue: {{ resource_record }}-dns::name
+{% endfor %}
+{% endif%}
+      TTL: {{ item.ttl }}
+      Type: {{ item.type }}
+
+Outputs:
+  RecordSet:
+    Description: "Record Set Id"
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-record::set::id
+    Value: { Ref: RecordSet }

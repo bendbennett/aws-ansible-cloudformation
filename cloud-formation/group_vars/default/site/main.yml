@@ -5,6 +5,10 @@ security_group_load_balancer_web:
         from_port: 80
         ip_protocol: tcp
         to_port: 80
+      - cidr_ip: 0.0.0.0/0
+        from_port: 443
+        ip_protocol: "tcp"
+        to_port: 443
     vpc_stack_name: "{{ vpc.stack_name }}"
 
 load_balancer_web:
@@ -15,6 +19,11 @@ load_balancer_web:
         instance_protocol: "HTTP"
         load_balancer_port: 80
         protocol: "HTTP"
+      - instance_port: 80
+        instance_protocol: "HTTP"
+        load_balancer_port: 443
+        protocol: "HTTPS"
+        ssl_certificate_id: "{{ ssl_certificate_id }}"
     name: "load-balancer-web"
     scheme: "internet-facing"
     security_group_stack_names:
@@ -232,7 +241,17 @@ task_definition_service_web:
         load_balancer_name: "{{ load_balancer_web[0].name }}"
     role_ecs_service_stack_name: "{{ role_ecs_service[0].stack_name }}"
 
+record_set:
+  - stack_name: cf-record-set
+    hosted_zone_name: "{{ hosted_zone_public_name }}"
+    name: "demo.{{ hosted_zone_public_name }}"
+    resource_records:
+      - "{{ load_balancer_web[0].stack_name }}"
+    ttl: 60
+    type: CNAME
+
 site_down:
+  - "{{ record_set[0].stack_name }}"
   - "{{ task_definition_service_web[0].stack_name }}"
   - "{{ launch_configuration_auto_scaling_group_web[0].stack_name }}"
   - "{{ cluster_launch_configuration_web[0].stack_name }}"

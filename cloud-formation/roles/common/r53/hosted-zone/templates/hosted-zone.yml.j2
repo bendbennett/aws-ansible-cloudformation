@@ -7,12 +7,14 @@ Resources:
     Type: AWS::Route53::HostedZone
     Properties:
       Name: {{ item.name }}
+{% if item.vpcs is defined %}
       VPCs:
 {% for vpc in item.vpcs %}
         - VPCId:
             Fn::ImportValue: {{ vpc.stack_name }}-vpc::id
           VPCRegion: {{ vpc.region }}
 {% endfor %}
+{% endif %}
 
 Outputs:
   HostedZoneId:

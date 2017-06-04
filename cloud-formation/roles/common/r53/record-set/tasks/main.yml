@@ -1,0 +1,15 @@
+- name: cloudformation - r53 - record-set - render template
+  template:
+    src=roles/common/r53/record-set/templates/record-set.yml.j2
+    dest=roles/common/r53/record-set/templates-generated/{{item.stack_name}}.yml
+  with_items: "{{ record_set_items }}"
+  check_mode: no
+
+- name: cloudformation - r53 - record-set
+  cloudformation:
+    stack_name: "{{ item.stack_name }}"
+    state: "present"
+    region: "{{ region }}"
+    disable_rollback: true
+    template: roles/common/r53/record-set/templates-generated/{{item.stack_name}}.yml
+  with_items: "{{ record_set_items }}"

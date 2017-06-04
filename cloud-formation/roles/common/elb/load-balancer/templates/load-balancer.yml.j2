@@ -13,6 +13,9 @@ Resources:
           InstanceProtocol: {{ listener.instance_protocol }}
           LoadBalancerPort: {{ listener.load_balancer_port }}
           Protocol: {{ listener.protocol }}
+{% if listener.ssl_certificate_id is defined %}
+          SSLCertificateId: {{ listener.ssl_certificate_id }}
+{% endif %}
 {% endfor %}
       LoadBalancerName: {{ item.name }}
       Scheme: {{ item.scheme }}
@@ -32,3 +35,13 @@ Outputs:
       Name:
         Fn::Sub: ${AWS::StackName}-load::balancer::id
     Value: { Ref: LoadBalancer }
+
+  LoadBalancerDNSName:
+    Description: "Load Balancer DNS Name"
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-dns::name
+    Value:
+      Fn::GetAtt:
+        - LoadBalancer
+        - DNSName

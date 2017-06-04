@@ -16,3 +16,4 @@
     - { role: common/ecs/cluster, cluster_items: "{{ cluster_launch_configuration_web }}" }
     - { role: common/as/launch-configuration-auto-scaling-group, launch_configuration_auto_scaling_group_items: "{{ launch_configuration_auto_scaling_group_web }}" }
     - { role: common/ecs/task-definition-service, task_definition_service_items: "{{ task_definition_service_web }}" }
+    - { role: common/r53/record-set, record_set_items: "{{ record_set }}" }

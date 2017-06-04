@@ -5,3 +5,4 @@ junit.xml
 *.retry
 **/templates-generated/*
 !**/templates-generated/.gitkeep
+private.yml
