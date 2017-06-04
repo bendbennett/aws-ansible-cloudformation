@@ -39,6 +39,9 @@ security_group_ec2_instance_mongo:
       - from_port: 27017
         ip_protocol: tcp
         security_group_stack_name: "{{ security_group_ec2_instance_web[0].stack_name }}"
+        to_port: 27017
+      - from_port: 27017
+        ip_protocol: tcp
         self_referencing: true
         to_port: 27017
     vpc_stack_name: "{{ vpc.stack_name }}"
@@ -236,6 +239,7 @@ site_down:
   - "{{ task_definition_service_mongo[0].stack_name }}"
   - "{{ launch_configuration_auto_scaling_group_mongo[0].stack_name }}"
   - "{{ cluster_launch_configuration_mongo[0].stack_name }}"
+  - "{{ log_group[0].stack_name }}"
   - "{{ role_ecs_service[0].stack_name }}"
   - "{{ instance_profile_launch_configuration[0].stack_name }}"
   - "{{ role_launch_configuration[0].stack_name }}"

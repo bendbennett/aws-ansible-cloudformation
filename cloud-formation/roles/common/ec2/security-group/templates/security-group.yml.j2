@@ -24,23 +24,10 @@ Resources:
       SourceSecurityGroupId:
         Fn::ImportValue: {{ security_group_ingress.security_group_stack_name }}-security::group::id
 {% endif %}
-      ToPort: {{ security_group_ingress.to_port }}
-
-{% if security_group_ingress.self_referencing is defined %}
-  SecurityGroupIngressSelfReferencing{{ loop.index }}:
-    Type: AWS::EC2::SecurityGroupIngress
-    Properties:
-      GroupId: { Ref: SecurityGroup }
-{% if security_group_ingress.cidr_ip is defined %}
-      CidrIp: {{ security_group_ingress.cidr_ip }}
-{% endif %}
-      FromPort: {{ security_group_ingress.from_port }}
-      IpProtocol: {{ security_group_ingress.ip_protocol }}
-{% if security_group_ingress.security_group_stack_name is defined %}
+{% if security_group_ingress.security_group_self_referencing is defined %}
       SourceSecurityGroupId: { Ref: SecurityGroup }
 {% endif %}
       ToPort: {{ security_group_ingress.to_port }}
-{% endif %}
 {% endfor %}
 
 Outputs:
