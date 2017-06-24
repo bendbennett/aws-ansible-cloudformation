@@ -3,3 +3,4 @@
   gather_facts: false
   roles:
     - { role: common/down, down_items: "{{ site_down }}" }
+    - { role: common/r53/record-set-down, record_set_items: "{{ record_set_private }}" }

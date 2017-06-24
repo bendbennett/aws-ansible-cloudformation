@@ -31,7 +31,7 @@ Resources:
                     - "echo ECS_CLUSTER="
                     - Fn::ImportValue: {{ item.lc_cluster_stack_name }}-cluster::id
                     - " >> /etc/ecs/ecs.config\n"
-                    - "echo ECS_AVAILABLE_LOGGING_DRIVERS=[\\\"json-file\\\",\\\"awslogs\\\"] >> /etc/ecs/ecs.config"
+                    - "echo ECS_AVAILABLE_LOGGING_DRIVERS=[\\\"json-file\\\",\\\"awslogs\\\"] >> /etc/ecs/ecs.config\n"
                     - "echo '*/10 * * * * root docker rm -v $(docker ps -a -q) >> /var/log/messages 2>&1' >> /etc/cron.d/docker"
               files:
                 /etc/cfn/cfn-hup.conf:

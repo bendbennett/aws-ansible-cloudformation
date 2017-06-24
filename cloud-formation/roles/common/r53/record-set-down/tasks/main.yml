@@ -1,0 +1,23 @@
+- name: r53 - record-set-retrieve
+  route53:
+    command: get
+    private_zone: true
+    record: "{{ item.name }}.{{ item.hosted_zone_name }}"
+    region: "{{ region }}"
+    type: "{{ item.type }}"
+    zone: "{{ item.hosted_zone_name }}"
+  register: record_set
+  with_items: "{{ record_set_items }}"
+  ignore_errors: yes
+
+- name: r53 - record-set-delete
+  route53:
+    command: delete
+    private_zone: true
+    zone: "{{ item.set.zone }}"
+    record: "{{ item.set.record }}"
+    ttl: "{{ item.set.ttl }}"
+    type: "{{ item.set.type }}"
+    value: "{{ item.set.value }}"
+  with_items: "{{ record_set.results }}"
+  ignore_errors: yes

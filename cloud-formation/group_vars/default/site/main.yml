@@ -51,7 +51,7 @@ security_group_ec2_instance_mongo:
         to_port: 27017
       - from_port: 27017
         ip_protocol: tcp
-        self_referencing: true
+        security_group_self_referencing: true
         to_port: 27017
     vpc_stack_name: "{{ vpc.stack_name }}"
 
@@ -249,6 +249,17 @@ record_set:
       - "{{ load_balancer_web[0].stack_name }}"
     ttl: 60
     type: CNAME
+
+record_set_private:
+  - hosted_zone_name: "{{ hosted_zone_private[0].name }}"
+    name: mongo-rs1
+    type: A
+  - hosted_zone_name: "{{ hosted_zone_private[0].name }}"
+    name: mongo-rs2
+    type: A
+  - hosted_zone_name: "{{ hosted_zone_private[0].name }}"
+    name: mongo-rs3
+    type: A
 
 site_down:
   - "{{ record_set[0].stack_name }}"
