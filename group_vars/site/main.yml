@@ -9,7 +9,7 @@ security_group_load_balancer_web:
         from_port: 443
         ip_protocol: "tcp"
         to_port: 443
-    vpc_stack_name: "{{ vpc.stack_name }}"
+    vpc_stack_name: "{{ vpc_stack_name }}"
 
 load_balancer_web:
   - stack_name: cf-load-balancer-web
@@ -29,9 +29,9 @@ load_balancer_web:
     security_group_stack_names:
       - "{{ security_group_load_balancer_web[0].stack_name }}"
     subnet_stack_names:
-      - "{{ subnet_public[0].stack_name }}"
-      - "{{ subnet_public[1].stack_name }}"
-      - "{{ subnet_public[2].stack_name }}"
+      - "{{ subnet_public_1_stack_name }}"
+      - "{{ subnet_public_2_stack_name }}"
+      - "{{ subnet_public_3_stack_name }}"
 
 security_group_ec2_instance_web:
   - stack_name: cf-security-group-ec2-instance-web
@@ -40,7 +40,7 @@ security_group_ec2_instance_web:
         ip_protocol: tcp
         security_group_stack_name: "{{ security_group_load_balancer_web[0].stack_name }}"
         to_port: 80
-    vpc_stack_name: "{{ vpc.stack_name }}"
+    vpc_stack_name: "{{ vpc_stack_name }}"
 
 security_group_ec2_instance_mongo:
   - stack_name: cf-security-group-ec2-instance-mongo
@@ -53,7 +53,7 @@ security_group_ec2_instance_mongo:
         ip_protocol: tcp
         security_group_self_referencing: true
         to_port: 27017
-    vpc_stack_name: "{{ vpc.stack_name }}"
+    vpc_stack_name: "{{ vpc_stack_name }}"
 
 role_launch_configuration:
   - stack_name: cf-role-launch-configuration
@@ -129,15 +129,15 @@ launch_configuration_auto_scaling_group_mongo:
     lc_security_group_stack_names:
       - "{{ security_group_ec2_instance_mongo[0].stack_name }}"
     lc_user_data_aws_cli: true
-    lc_user_data_hosted_zone_stack_name: "{{ hosted_zone_private[0].stack_name }}"
+    lc_user_data_hosted_zone_stack_name: "{{ hosted_zone_private_stack_name }}"
     asg_desired_capacity: 3
     asg_health_check_type: "EC2"
     asg_max_size: 3
     asg_min_size: 1
     asg_vpc_zone_identifiers:
-      - "{{ subnet_private[0].stack_name }}"
-      - "{{ subnet_private[1].stack_name }}"
-      - "{{ subnet_private[2].stack_name }}"
+      - "{{ subnet_private_1_stack_name }}"
+      - "{{ subnet_private_2_stack_name }}"
+      - "{{ subnet_private_3_stack_name }}"
 
 task_definition_service_mongo:
   - stack_name: cf-task-definition-service-mongo
@@ -181,9 +181,9 @@ launch_configuration_auto_scaling_group_web:
     asg_max_size: 3
     asg_min_size: 1
     asg_vpc_zone_identifiers:
-      - "{{ subnet_private[0].stack_name }}"
-      - "{{ subnet_private[1].stack_name }}"
-      - "{{ subnet_private[2].stack_name }}"
+      - "{{ subnet_private_1_stack_name }}"
+      - "{{ subnet_private_2_stack_name }}"
+      - "{{ subnet_private_3_stack_name }}"
 
 task_definition_service_web:
   - stack_name: cf-task-definition-service-web
@@ -251,13 +251,13 @@ record_set:
     type: CNAME
 
 record_set_private:
-  - hosted_zone_name: "{{ hosted_zone_private[0].name }}"
+  - hosted_zone_name: "{{ hosted_zone_private_name }}"
     name: mongo-rs1
     type: A
-  - hosted_zone_name: "{{ hosted_zone_private[0].name }}"
+  - hosted_zone_name: "{{ hosted_zone_private_name }}"
     name: mongo-rs2
     type: A
-  - hosted_zone_name: "{{ hosted_zone_private[0].name }}"
+  - hosted_zone_name: "{{ hosted_zone_private_name }}"
     name: mongo-rs3
     type: A
 
