@@ -75,7 +75,9 @@ Resources:
         Fn::ImportValue: {{ item.lc_iam_instance_profile_stack_name }}-instance::profile::id
       ImageId: {{ item.lc_image_id }}
       InstanceType: {{ item.lc_instance_type }}
+{% if item.lc_key_name is defined %}
       KeyName: {{ item.lc_key_name }}
+{% endif %}
       SecurityGroups:
 {% for lc_security_group_stack_name in item.lc_security_group_stack_names %}
         - Fn::ImportValue: {{ lc_security_group_stack_name }}-security::group::id

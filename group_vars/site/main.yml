@@ -1,3 +1,8 @@
+# hosted_zone_public_name: replace_with_public_hosted_zone_name
+# ssl_certificate_id: replace_with_ssl_certificate_arn
+ami_image_id: ami-809f84e6
+# key_name: replace_with_key_name
+
 security_group_load_balancer_web:
   - stack_name: cf-security-group-load-balancer-web
     security_group_ingress:
@@ -123,9 +128,9 @@ launch_configuration_auto_scaling_group_mongo:
     lc_associate_public_ip_address: false
     lc_cluster_stack_name: "{{ cluster_launch_configuration_mongo[0].stack_name }}"
     lc_iam_instance_profile_stack_name: "{{ instance_profile_launch_configuration[0].stack_name }}"
-    lc_image_id: "ami-95f8d2f3"
+    lc_image_id: "{{ ami_image_id }}"
     lc_instance_type: "t2.micro"
-    lc_key_name: "eu-west-1-synaptology-administrator"
+    lc_key_name: "{{ key_name }}"
     lc_security_group_stack_names:
       - "{{ security_group_ec2_instance_mongo[0].stack_name }}"
     lc_user_data_aws_cli: true
@@ -143,7 +148,7 @@ task_definition_service_mongo:
   - stack_name: cf-task-definition-service-mongo
     container_definitions:
       - name: "mongo"
-        cpu: 256
+        cpu: 1024
         essential: true
         image: "bendbennett/mongo-seeded:v0.3.0"
         log_configuration:
@@ -152,7 +157,7 @@ task_definition_service_mongo:
             awslogs_region: "{{ region }}"
             awslogs_group_name: "symfony-api-swagger-jwt"
             awslogs_stream_prefix: "mongo"
-        memory: 256
+        memory: 993
         port_mappings:
           - container_port: 27017
             host_port: 27017
@@ -171,9 +176,9 @@ launch_configuration_auto_scaling_group_web:
     lc_associate_public_ip_address: false
     lc_cluster_stack_name: "{{ cluster_launch_configuration_web[0].stack_name }}"
     lc_iam_instance_profile_stack_name: "{{ instance_profile_launch_configuration[0].stack_name }}"
-    lc_image_id: "ami-95f8d2f3"
+    lc_image_id: "{{ ami_image_id }}"
     lc_instance_type: "t2.micro"
-    lc_key_name: "eu-west-1-synaptology-administrator"
+    lc_key_name: "{{ key_name }}"
     lc_security_group_stack_names:
       - "{{ security_group_ec2_instance_web[0].stack_name }}"
     asg_desired_capacity: 3
@@ -208,7 +213,7 @@ task_definition_service_web:
           - source_container: src
             read_only: false
       - name: "php"
-        cpu: 256
+        cpu: 756
         environment:
           - name: SY_MONGODB_SERVER
             value: "mongodb://mongo-rs1.internal.synaptology.net:27017,mongo-rs2.internal.synaptology.net:27017,mongo-rs3.internal.synaptology.net:27017/?replicaSet=rs0"
@@ -220,13 +225,13 @@ task_definition_service_web:
             awslogs_region: "{{ region }}"
             awslogs_group_name: "symfony-api-swagger-jwt"
             awslogs_stream_prefix: "php-fpm"
-        memory: 256
+        memory: 853
         volumes_from:
           - source_container: src
             read_only: false
       - name: "src"
         command: [ "ping", "127.0.0.1", "-q" ]
-        cpu: 128
+        cpu: 12
         essential: true
         image: "bendbennett/symfony-api-swagger-jwt-src:v0.1.0"
         memory: 12

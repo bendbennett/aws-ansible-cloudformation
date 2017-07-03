@@ -11,3 +11,4 @@ subnet_private_2_stack_name: cf-subnet-private-2
 subnet_private_3_stack_name: cf-subnet-private-3
 
 hosted_zone_private_stack_name: cf-hosted-zone-internal
+hosted_zone_private_name: internal.synaptology.net.
